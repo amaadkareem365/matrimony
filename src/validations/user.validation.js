@@ -33,7 +33,7 @@ const createUser = {
     gender: Joi.string().optional(),
     age: Joi.number().integer().optional(),
     relationshipStatus: Joi.string().optional(),
-    children: Joi.boolean().optional(),
+    children: Joi.string().optional(),
     religion: Joi.string().optional(),
     shortDescription: Joi.string().optional(),
     roleId: Joi.number().optional()
