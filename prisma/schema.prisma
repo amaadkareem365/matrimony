@@ -1119,7 +1119,7 @@ model FooterSection {
   id          Int    @id @default(autoincrement())
   sectionName String // e.g., "Company", "Support"
   pageNames   String // Comma-separated page names like: "About,Contact,Terms"
-
+  pagesLinks  String?
   footerId Int
   footer   FooterSettings @relation(fields: [footerId], references: [id])
 
@@ -1130,6 +1130,7 @@ model FooterSection {
 model UserDashoard {
   id          Int      @id @default(autoincrement())
   sectionPage String
+  pages      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

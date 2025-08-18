@@ -596,14 +596,17 @@ const updateFooter = {
 const createSection = {
   body: Joi.object({
     sectionName: Joi.string().required(),
-    pageNames: Joi.string().required()
+    pageNames: Joi.string().required(),
+    pagesLinks:Joi.string().optional()
+
   })
 };
 
 const updateSection = {
   body: Joi.object({
     sectionName: Joi.string().optional(),
-    pageNames: Joi.string().optional()
+    pageNames: Joi.string().optional(),
+    pagesLinks:Joi.string().optional()
   })
 };
 
