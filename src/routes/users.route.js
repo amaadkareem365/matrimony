@@ -23,7 +23,10 @@ router.post("/", validate(userValidation.createUser), userController.createUser)
 router.post('/image-request',auth(), userController.requestPhotoAccess);
 router.post('/image-request/:requestId/respond',auth(), userController.respondToPhotoRequest);
 router.get('/image-request',auth(), userController.getPhotoRequests);
-
+router
+  .route('/photo-setting')
+  .get(auth(), userController.getPhotoSetting)
+  .patch(auth(), validate(userValidation.photoSettingSchema), userController.updatePhotoSetting);
 // User CRUD
 router.post("/roles", validate(userValidation.createRole), userController.createRole);
 router.get("/roles", userController.getRoles);
@@ -94,10 +97,7 @@ router.delete("/:userId/physical-appearance", validate(userValidation.userIdPara
 router.post('/block', auth(), userController.blockUser);
 router.post('/unblock', auth(), userController.unblockUser);
 
-router
-  .route('/photo-setting')
-  .get(auth(), userController.getPhotoSetting)
-  .patch(auth(), validate(userValidation.photoSettingSchema), userController.updatePhotoSetting);
+
 
 router
   .route('/support-tickets')
