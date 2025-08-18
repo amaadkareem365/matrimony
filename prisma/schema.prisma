@@ -1,0 +1,1135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  MODERATOR
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String?
+  email     String?   @unique
+  firstName String?
+  lastName  String?
+  dob       DateTime?
+  role      Role      @default(CLIENT)
+  lastLogin DateTime? // nullable initially
+
+  password             String?
+  otp                  String?
+  otpExpiresAt         DateTime?
+  isActive             Boolean               @default(true)
+  isDeleted            Boolean               @default(false)
+  image                String?
+  phone                String?
+  department           String?
+  location             String?
+  origin               String?
+  gender               String?
+  age                  Int?
+  messageCount         Int?                  @default(0)
+  relationshipStatus   String?
+  lookingFor           String?
+  children             String?
+  religion             String?
+  shortDescription     String?
+  isPremium            Boolean?              @default(false)
+  packageStart         DateTime?
+  packageEnd           DateTime?
+  // Relations
+  educationCareer      EducationCareer?
+  personalityBehavior  PersonalityBehavior?
+  partnerExpectation   PartnerExpectation?
+  lifestyle            Lifestyle?
+  hobbiesInterests     HobbiesInterests?
+  language             LanguageInfo?
+  living               Living?
+  physicalAppearance   PhysicalAppearance?
+  notificationSettings NotificationSettings?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  route                String?
+  Token                Token[]
+
+  blockedUsers   Block[] @relation("Blocker")
+  blockedByUsers Block[] @relation("Blocked")
+
+  PhotoSetting PhotoSetting[]
+
+  SupportTicket SupportTicket[]
+
+  SupportTicketReply SupportTicketReply[]
+
+  Connection1 Connection[] @relation("Connections1")
+
+  Connection2 Connection[] @relation("Connections2")
+
+  SentLike Like[] @relation("SentLikes")
+
+  ReceivedLikes Like[] @relation("ReceivedLikes")
+
+  PhotoRequestsSent PhotoRequest[] @relation("PhotoRequestsSent")
+
+  PhotoRequestsReceived PhotoRequest[] @relation("PhotoRequestsReceived")
+  isOnline              Boolean        @default(false)
+  lastSeen              DateTime?
+  Message               Message[]
+
+  ChatUserMeta         ChatUserMeta[]
+  NotificationReceived Notification[] @relation("ReceivedNotifications")
+  NotificationSent     Notification[] @relation("SentNotifications")
+  roleId               Int?
+  allow                Alloweded?     @relation(fields: [roleId], references: [id])
+
+  UserPackage UserPackage[]
+
+  ChatUser ChatUser[]
+}
+
+model ChatUser {
+  chatId Int
+  userId Int
+  chat   Chat @relation(fields: [chatId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@id([chatId, userId])
+}
+
+model Alloweded {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique // e.g., 'Administrator', 'Moderator'
+  description String?
+  isDefault   Boolean      @default(false)
+  isActive    Boolean      @default(true)
+  catagory    String?
+  permissions Permission[]
+  users       User[]
+}
+
+model Permission {
+  id        Int     @id @default(autoincrement())
+  module    String // e.g., 'Dashboard', 'Members', 'Reports'
+  canView   Boolean @default(false)
+  canCreate Boolean @default(false)
+  canEdit   Boolean @default(false)
+  canDelete Boolean @default(false)
+
+  roleId Int
+  role   Alloweded @relation(fields: [roleId], references: [id])
+}
+
+model PhotoSetting {
+  id                         Int     @id @default(autoincrement())
+  userId                     Int     @unique
+  onlyMembersWithPhotoCanSee Boolean @default(false)
+  onlyVipCanSee              Boolean @default(false)
+  blurForFreeMembers         Boolean @default(false)
+  onRequestOnly              Boolean @default(false)
+  user                       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Block {
+  id        Int      @id @default(autoincrement())
+  blockerId Int
+  blockedId Int
+  createdAt DateTime @default(now())
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id])
+  blocked User @relation("Blocked", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId]) // Prevent duplicate blocks
+}
+
+model EducationCareer {
+  id                      Int     @id @default(autoincrement())
+  userId                  Int     @unique
+  primarySpecialization   String
+  secondarySpecialization String?
+  qualifications          String?
+  experience              String?
+  education               String?
+  certifications          String?
+  department              String?
+  position                String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model PersonalityBehavior {
+  id              Int     @id @default(autoincrement())
+  userId          Int     @unique
+  simple          Boolean @default(false)
+  musical         Boolean @default(false)
+  conservative    Boolean @default(false)
+  calm            Boolean @default(false)
+  pragmatic       Boolean @default(false)
+  streetSmart     Boolean @default(false)
+  subdued         Boolean @default(false)
+  demanding       Boolean @default(false)
+  narcissistic    Boolean @default(false)
+  eccentric       Boolean @default(false)
+  spiritual       Boolean @default(false)
+  talkative       Boolean @default(false)
+  prettySmart     Boolean @default(false)
+  undemanding     Boolean @default(false)
+  altruistic      Boolean @default(false)
+  stubborn        Boolean @default(false)
+  selfish         Boolean @default(false)
+  sporty          Boolean @default(false)
+  modest          Boolean @default(false)
+  humorous        Boolean @default(false)
+  romantic        Boolean @default(false)
+  serious         Boolean @default(false)
+  sharp           Boolean @default(false)
+  caring          Boolean @default(false)
+  spontaneously   Boolean @default(false)
+  freethinking    Boolean @default(false)
+  adventurous     Boolean @default(false)
+  sensual         Boolean @default(false)
+  straightForward Boolean @default(false)
+  intellectual    Boolean @default(false)
+  embarrassed     Boolean @default(false)
+  exuberant       Boolean @default(false)
+  worldly         Boolean @default(false)
+  artistic        Boolean @default(false)
+  sluggish        Boolean @default(false)
+  compulsive      Boolean @default(false)
+  relaxed         Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model PartnerExpectation {
+  id                 Int     @id @default(autoincrement())
+  userId             Int     @unique
+  origin             String?
+  lookingFor         String?
+  length             String?
+  religion           String?
+  relationshipStatus String?
+  education          String?
+  weight             String?
+  smoke              String?
+  drinking           String?
+  goingOut           String?
+  ageFrom            Int?
+  ageTo              Int?
+  country            String?
+  city               String?
+  state              String?
+  children           String?
+  user               User    @relation(fields: [userId], references: [id])
+}
+
+model Lifestyle {
+  id              Int     @id @default(autoincrement())
+  userId          Int     @unique
+  smoke           String?
+  drinking        String?
+  goingOut        String?
+  exercise        String?
+  diet            String?
+  pets            String?
+  travel          String?
+  socialMedia     String?
+  workLifeBalance String?
+  nightLife       String?
+  primaryHobby    String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model HobbiesInterests {
+  id      Int     @id @default(autoincrement())
+  userId  Int     @unique
+  sports  String?
+  music   String?
+  kitchen String?
+  reading String?
+  tvShows String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model LanguageInfo {
+  id             Int     @id @default(autoincrement())
+  userId         Int     @unique
+  motherTongue   String?
+  knownLanguages String? // Store as CSV or use a relation table if needed
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Living {
+  id      Int    @id @default(autoincrement())
+  userId  Int    @unique
+  country String
+  state   String
+  city    String
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model PhysicalAppearance {
+  id           Int     @id @default(autoincrement())
+  userId       Int     @unique
+  height       String?
+  eyeColor     String?
+  hairColor    String?
+  bodyType     String?
+  weight       String?
+  appearance   String?
+  clothing     String?
+  intelligence String?
+  language     String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SupportTicket {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  subject     String
+  category    String
+  priority    String
+  description String
+  status      String   @default("open") // open, in_progress, closed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies SupportTicketReply[]
+}
+
+model SupportTicketReply {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  senderId  Int
+  message   String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model Token {
+  id          Int       @id @default(autoincrement())
+  token       String
+  type        TokenType
+  expires     DateTime
+  blacklisted Boolean
+  createdAt   DateTime  @default(now())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  RESET_PASSWORD
+  VERIFY_EMAIL
+}
+
+model ProfileAttribute {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique // e.g., "eyeColor"
+  label      String // e.g., "Eye Color"
+  type       String // "text", "select", "boolean", "number", "multiselect"
+  options    String? // Comma-separated values (for select)
+  isActive   Boolean  @default(true)
+  isVisible  Boolean  @default(true)
+  isRequired Boolean  @default(false)
+  order      Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model FAQCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  faqs      FAQ[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FAQ {
+  id         Int         @id @default(autoincrement())
+  question   String      @db.Text
+  answer     String      @db.Text
+  categoryId Int
+  category   FAQCategory @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model BlogCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  blogs     Blog[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Blog {
+  id               Int          @id @default(autoincrement())
+  title            String
+  slug             String       @unique
+  categoryId       Int
+  category         BlogCategory @relation(fields: [categoryId], references: [id])
+  bannerImage      String?
+  shortDescription String?      @db.Text
+  description      String?      @db.Text
+
+  // Meta fields
+  metaTitle       String?
+  metaImage       String?
+  metaDescription String?
+  metaKeywords    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Package {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  image     String? // optional image URL or path
+  validity  Int // e.g., number of days
+  isActive  Boolean  @default(true)
+  soldCount Int      @default(0) // ✅ new field to track purchases
+  features  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  UserPackage UserPackage[]
+}
+
+enum PackageStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+model UserPackage {
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  packageId       Int
+  purchaseDate    DateTime      @default(now())
+  startDate       DateTime // When the package starts (can be purchaseDate or later)
+  endDate         DateTime // Calculated from startDate + validity
+  priceAtPurchase Float // Store the price at purchase time (in case it changes later)
+  status          PackageStatus @default(ACTIVE) // ACTIVE, EXPIRED, CANCELED
+  transactionId   String? // Optional - if integrated with payment gateway
+  notes           String? // For admin remarks
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id])
+  package Package @relation(fields: [packageId], references: [id])
+}
+
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.Text
+  emails    String // Comma-separated list of emails
+  sent      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Banner {
+  id          Int      @id @default(autoincrement())
+  name        String
+  link        String
+  bannerImage String
+  startDate   DateTime
+  endDate     DateTime
+  cpm         Float?
+  page        String // Keeping as string for now
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model ChatSettings {
+  id                Int      @id @default(autoincrement())
+  messageLength     Int      @default(500)
+  displayName       String?
+  enableImages      Boolean  @default(true)
+  enableVideos      Boolean  @default(true)
+  enableFiles       Boolean  @default(true)
+  fileExtensions    String   @default("pdf,doc,docx,txt,jpg,jpeg,png,gif,mp4")
+  fileSizeLimit     Int      @default(10)
+  noticeStyle       String?
+  pageNoticeMessage String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model BasicSettings {
+  id Int @id @default(autoincrement())
+
+  // System Identity
+  systemLogo String?
+  systemName String?
+
+  // Member Settings
+  memberPrefix String? // e.g., "MBR"
+  minimumAge   Int? // e.g., 18
+
+  // Format Settings
+  dateFormat      String? // e.g., "DD-MM-YYYY"
+  adminPanelTitle String?
+
+  // Admin Appearance
+  loginImage        String?
+  loginMessage      String?
+  maintenanceMode   Boolean  @default(false)
+  defaultCurrency   String? // e.g., USD, EUR
+  defaultLanguage   String? // e.g., en, nl
+  serverInformation String?
+  database          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CookieSettings {
+  id            Int      @id @default(autoincrement())
+  siteKey       String?
+  showAgreement Boolean  @default(true)
+  cookieText    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SeoSettings {
+  id              Int      @id @default(autoincrement())
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  metaImage       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique // e.g., 'WELCOME_EMAIL'
+  isActive  Boolean  @default(true)
+  status    String? // Optional: e.g., 'draft', 'published'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations EmailTemplateTranslation[]
+}
+
+model EmailTemplateTranslation {
+  id              Int    @id @default(autoincrement())
+  emailTemplateId Int
+  language        String // e.g., 'en', 'nl', 'fr'
+  subject         String
+  content         String
+
+  emailTemplate EmailTemplate @relation(fields: [emailTemplateId], references: [id])
+
+  @@unique([emailTemplateId, language]) // prevent duplicate translations for the same lang
+}
+
+model Language {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String // e.g., "English", "Dutch"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Translation Translation[]
+}
+
+model Translation {
+  id         Int      @id @default(autoincrement())
+  key        String // unique identifier for the phrase (e.g., "welcome_message")
+  languageId Int
+  text       String // actual translation
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  language Language @relation(fields: [languageId], references: [id])
+
+  @@unique([key, languageId]) // prevent duplicate translations for same key & language
+}
+
+model GoogleLoginSettings {
+  id           Int      @id @default(autoincrement())
+  clientId     String?
+  clientSecret String?
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model FacebookLoginSettings {
+  id           Int      @id @default(autoincrement())
+  clientId     String?
+  clientSecret String?
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RecaptchaSettings {
+  id         Int      @id @default(autoincrement())
+  siteKey    String?
+  siteSecret String?
+  isActive   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model MollieSettings {
+  id        Int      @id @default(autoincrement())
+  key       String?
+  secret    String?
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StripeSettings {
+  id        Int      @id @default(autoincrement())
+  key       String?
+  publicKey String?
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SMTPSettings {
+  id          Int      @id @default(autoincrement())
+  host        String?
+  port        Int?
+  username    String?
+  password    String?
+  encryption  String?
+  fromAddress String?
+  fromName    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PushNotificationSettings {
+  id                Int      @id @default(autoincrement())
+  isActive          Boolean  @default(false)
+  fcmApiKey         String?
+  authDomain        String?
+  projectId         String?
+  storageBucket     String?
+  messagingSenderId String?
+  appId             String?
+  serverKey         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CurrencySetting {
+  id            Int      @id @default(autoincrement())
+  currencyName  String
+  currencyCode  String
+  symbol        String
+  textDirection String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  CurrencyDefaultSetting CurrencyDefaultSetting[]
+}
+
+model CurrencyDefaultSetting {
+  id                Int      @id @default(autoincrement())
+  defaultCurrencyId Int
+  symbolFormat      String // 'prefix' | 'suffix'
+  decimalSeparator  String // '.' or ','
+  decimalPlaces     Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  currency CurrencySetting @relation(fields: [defaultCurrencyId], references: [id])
+}
+
+model AbusiveWord {
+  id        Int      @id @default(autoincrement())
+  word      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationSettings {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  // Email Notifications
+  emailSecurityAlerts Boolean @default(false)
+  emailAccountUpdates Boolean @default(false)
+  emailNewsletter     Boolean @default(false)
+
+  // Push Notifications
+  pushLoginAlerts     Boolean @default(false)
+  pushCriticalUpdates Boolean @default(false)
+  pushReminders       Boolean @default(false)
+
+  // System Notifications
+  systemTaskUpdates Boolean @default(false)
+  systemComments    Boolean @default(false)
+  systemMentions    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomepageSettings {
+  id             Int     @id @default(autoincrement())
+  Title          String
+  Url            String
+  // Banner Section
+  bannerTitle    String? // "Dating leuk gevonden... zonder de spelletjes."
+  bannerSubTitle String? // "Al 13 jaar ontwikkeld simplex met elkaar verbinden."
+  bannerImage    String? // Banner Image (Recommended size 1920*1080)
+
+  // FAQs Section
+  faqsTitle       String? // "Het antwoord al simplex op onze datingsites?"
+  faqsSubTitle    String? // "Je bent maar 3 stappen verwijderd van een geweldige date."
+  faqsDescription String? // Long description text
+
+  // Name field
+  faqname String? // "Maak gratis je profiel aan"
+
+  // Latest Section
+  faqlatestTitle    String? // "Zo worden ontmoet leuk"
+  faqlatestSubTitle String? // "Online daten is makkelijk en de drempel is niet eens wat lager dan in de s"
+
+  // Blog Section
+  blogTitle String? // "Magazine"
+
+  // Dating Site Section
+  datingSiteTitle String? // "Hoe kun je daten met dat je kiest ben voor een serieuze ervaring op een online datingsites?"
+
+  // Dating Site Images
+  datingSiteImageTitle1 String? // "Dating Site Image Title1"
+  datingSiteImage1      String? // Image path/URL
+
+  datingSiteImageTitle2 String? // "Dating Site Image Title2"  
+  datingSiteImage2      String? // Image path/URL
+
+  datingSiteImageTitle3 String? // "Dating Site Image Title3"
+  datingSiteImage3      String? // Image path/URL
+
+  datingSiteImageTitle4 String? // "Dating Site Image Title4"
+  datingSiteImage4      String? // Image path/URL
+
+  // Show on Header checkbox
+  showOnHeader Boolean  @default(false)
+  // System fields
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Add this model to your existing Prisma schema
+
+model ContactPageSettings {
+  id                 Int     @id @default(autoincrement())
+  Title              String
+  Url                String
+  // Contact Banner Section
+  contactName        String? // "Contact"
+  contactBannerImage String? // Contact Banner Image (Recommended size 1920*1080)
+  bannerTitle        String? // "Welkom bij help & contact"
+  bannerSubTitle     String? // "Contact Sub title"
+  bannerDescription  String? // Rich text description
+
+  // Contact Information Section
+  addressName  String? // "Wil je een vraag over het gebruik van humsafar"
+  addressValue String? // "stuur dan een e-mail naar: hello@humsafar.nl"
+
+  phoneName  String? // "Wil je contact opnemen met de afdeling Marketing?"
+  phoneValue String? // "Stuur een e-mail naar biz@humsafar.nl"
+
+  emailName  String? // "Misbruik melden"
+  emailValue String? // "abuse@humsafar.nl"
+
+  // Contact Form Section
+  contactFormTitle       String? // "Hoe kunnen we je helpen?"
+  contactFormDescription String? // Rich text description for contact form
+
+  // Display Settings
+  showOnHeader Boolean @default(false) // Show on Header checkbox
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RegistrationPageSettings {
+  id          Int     @id @default(autoincrement())
+  Title       String
+  Url         String
+  // Registration Section
+  bannerImage String? // Banner Image upload
+
+  // Step 1: Create
+  step1Title       String? // "Step 1: Create"
+  step1Description String? // "Maak je profiel"
+
+  // Step 2: Details
+  step2Title       String? // "Step 2: Details"
+  step2Description String? // "Vertel wat over jezelf?"
+
+  // Step 3: Description
+  step3Title       String? // "Step 3: Description"
+  step3Description String? // "Beschrijf jezelf in een paar woorden"
+
+  // Step 4: Personal Information
+  step4Title       String? // "Step 4: Personal Information"
+  step4Description String? // "Vertel ons over je persoonlijkheid"
+
+  // My Image Section
+  myImageTitle       String? // "My Image"
+  myImageDescription String? // "Upload je foto"
+
+  // My Description Section
+  myDescriptionTitle       String? // "My Description"
+  myDescriptionPlaceholder String? // "Beschrijf jezelf in een paar zinnen"
+
+  // Step 5: Partner Detail
+  step5Title       String? // "Step 5: Partner Detail"
+  step5Description String? // "Waar ben je naar op zoek?"
+
+  // Step 6: Complete Profile
+  step6Title       String? // "Step 6: Complete Profile"
+  step6Description String? // "Maak je profiel compleet"
+
+  // Step 7: Verification
+  step7Title       String? // "Step 7: Verification"
+  step7Description String? // "Verification Code"
+
+  // Display Settings
+  showOnHeader Boolean @default(false) // Show on Header checkbox
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  pageLink  String   @unique
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TermsAndConditionsPageSettings {
+  id               Int     @id @default(autoincrement())
+  Title            String
+  Url              String
+  // Page Content Section
+  pageSectiontitle String? // "Term and conditions"
+  link             String? // "terms" - URL slug/link
+  content          String? @db.Text // Rich text content from "Add Content" editor
+
+  // SEO Fields Section
+  metaTitle       String? // "Term and conditions"
+  metaDescription String? // "Term and conditions"
+  keywords        String? // "Term and conditions" (Separate with comma)
+  metaImage       String? // Meta Image (200×200+) upload
+
+  // Page Settings
+  pageType String? // "Public" - dropdown selection
+
+  // Display Settings
+  showOnHeader Boolean @default(false) // Show on Header checkbox
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model howWorksPage {
+  id             Int     @id @default(autoincrement())
+  Title          String
+  Url            String
+  // Banner Section
+  bannerImage    String? // Banner Image (Recommended size 1920*1080)
+  bannerTitle    String? // "Waarom kiezen voor Humsafar?"
+  bannerSubTitle String? // Rich text sub title content
+
+  // Contact Information Section
+  contactName       String? // "Meld je nu aan gratis aan"
+  searchPlaceholder String? // "Search" placeholder text
+
+  // FAQs Section
+  faqTitle       String? // "Partner zoeken voor het leven?"
+  faqSubTitle    String? // Rich text sub title for FAQs
+  faqDescription String? // Rich text description for FAQs
+  faqProfileName String? // "Add Profile"
+
+  // Display Settings
+  showOnHeader Boolean @default(false) // Show on Header checkbox
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model veePage {
+  id              Int     @id @default(autoincrement())
+  Title           String
+  Url             String
+  // Page Content Section
+  PageContentitle String? // "Term and conditions" - page title
+  link            String? // "terms" - URL slug/link
+  content         String? @db.Text // Rich text content from "Add Content" editor
+
+  // SEO Fields Section
+  metaTitle       String? // "Term and conditions" - SEO meta title
+  metaDescription String? // "Term and conditions" - SEO meta description
+  keywords        String? // "Term and conditions" - SEO keywords (Separate with comma)
+  metaImage       String? // Meta Image (200×200+) upload
+
+  // Page Settings
+  pageType String? // "Public" - dropdown selection (Public/Private)
+  pageName String? // "Veelgestelde" - the actual page name
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AgendaPageSettings {
+  id           Int     @id @default(autoincrement())
+  Title        String
+  Url          String
+  // Page Header
+  pageTitle    String? // "Agenda"
+  pageSubtitle String? // "Here's what's happening today."
+
+  // Page Content Section
+  titleContentSection String? // "Term and conditions" - content title
+  link                String? // "terms" - URL slug/link
+  content             String? @db.Text // Rich text content from "Add Content" editor
+
+  // SEO Fields Section
+  metaTitle       String? // "Term and conditions" - SEO meta title
+  metaDescription String? // "Term and conditions" - SEO meta description
+  keywords        String? // "Term and conditions" - SEO keywords (Separate with comma)
+  metaImage       String? // Meta Image (200×200+) upload
+
+  // Page Settings
+  pageType String? // "Public" - dropdown selection (Public/Private)
+
+  // Display Settings
+  showOnHeader Boolean @default(false) // Show on Header checkbox
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  id Int @id @default(autoincrement())
+
+  // Page Content Section
+  Title   String
+  Url     String // "terms" - URL slug/link (required)
+  content String? @db.Text // <- allow long rich-text content
+
+  // SEO Fields Section
+  metaTitle       String? // "Term and conditions" - SEO meta title
+  metaDescription String? // "Term and conditions" - SEO meta description
+  keywords        String? // "Term and conditions" - SEO keywords (Separate with comma)
+  metaImage       String? // Meta Image (200×200+) upload
+
+  // Page Settings
+  pageType String @default("Public") // "Public" or "Private" - dropdown selection
+
+  // System fields
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Preferances {
+  id Int @id @default(autoincrement())
+
+  // Maintenance Mode
+  maintenanceMode Boolean? @default(false)
+
+  // Currency Settings
+  defaultCurrency String?
+
+  // Language Settings
+  defaultLanguage String?
+
+  // System fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([id]) // Ensure only one settings record exists
+}
+
+model Like {
+  id         Int        @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  status     LikeStatus @default(PENDING)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  sender   User @relation("SentLikes", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedLikes", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+}
+
+model Connection {
+  id        Int      @id @default(autoincrement())
+  user1Id   Int
+  user2Id   Int
+  createdAt DateTime @default(now())
+
+  user1 User @relation("Connections1", fields: [user1Id], references: [id])
+  user2 User @relation("Connections2", fields: [user2Id], references: [id])
+
+  @@unique([user1Id, user2Id])
+}
+
+enum LikeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model PhotoRequest {
+  id          Int                @id @default(autoincrement())
+  requesterId Int
+  targetId    Int
+  status      PhotoRequestStatus @default(PENDING)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  requester User @relation("PhotoRequestsSent", fields: [requesterId], references: [id])
+  target    User @relation("PhotoRequestsReceived", fields: [targetId], references: [id])
+
+  @@unique([requesterId, targetId])
+}
+
+enum PhotoRequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  time      String?
+  senderId  Int
+  chatId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id])
+}
+
+model Chat {
+  id        Int       @id @default(autoincrement())
+  chatName  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  ChatUserMeta ChatUserMeta[]
+
+  ChatUser ChatUser[]
+}
+
+model ChatUserMeta {
+  id          Int @id @default(autoincrement())
+  chatId      Int
+  userId      Int
+  unreadCount Int @default(0)
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([chatId, userId])
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  senderId   Int?
+  receiverId Int
+  type       String?
+  content    String
+  extra      Json?
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  receiver   User     @relation("ReceivedNotifications", fields: [receiverId], references: [id])
+  sender     User?    @relation("SentNotifications", fields: [senderId], references: [id])
+}
+
+model FooterSettings {
+  id                Int     @id @default(autoincrement())
+  footerLogo        String? // URL to logo image
+  footerDescription String?
+  searchName        String?
+  linkName          String?
+  footerContent     String?
+
+  // Relation to many footer sections
+  sections FooterSection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FooterSection {
+  id          Int    @id @default(autoincrement())
+  sectionName String // e.g., "Company", "Support"
+  pageNames   String // Comma-separated page names like: "About,Contact,Terms"
+
+  footerId Int
+  footer   FooterSettings @relation(fields: [footerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserDashoard {
+  id          Int      @id @default(autoincrement())
+  sectionPage String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
