@@ -1434,7 +1434,8 @@ const getSentLikes = async (userId) => {
       senderId: userId,
     },
     include: {
-      receiver: true
+      receiver: true,
+      sender:true
     },
     orderBy: {
       updatedAt: 'desc'
