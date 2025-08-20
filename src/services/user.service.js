@@ -671,13 +671,24 @@ const deletePhysicalAppearanceByUserId = async (userId) => {
 
 const blockUser = async (blockerId, blockedUserId) => {
   if (blockerId === blockedUserId) throw new Error('You cannot block yourself.');
+  const existingBlock = await prisma.block.findFirst({
+    where: {
+      blockerId,
+      blockedId: blockedUserId,
+    },
+  });
 
-  return await prisma.block.create({
+  if (existingBlock) {
+    return { message: "You have already blocked this user." };
+  }
+   await prisma.block.create({
     data: {
       blockerId,
       blockedId: blockedUserId,
     },
   });
+   return { message: "You blocked this user." };
+
 };
 
 const unblockUser = async (blockerId, blockedUserId) => {

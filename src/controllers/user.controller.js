@@ -214,9 +214,9 @@ const deletePhysicalAppearance = catchAsync(async (req, res) => {
 const blockUser = catchAsync(async (req, res) => {
   const { blockedUserId } = req.body;
   const blockerId = req.user.id;
-
-  await userService.blockUser(blockerId, blockedUserId);
-  res.status(200).json({ message: 'User blocked successfully' });
+   console.log(blockerId,blockedUserId)
+ const respose= await userService.blockUser(blockerId, blockedUserId);
+  res.status(200).json({ message: respose.message });
 });
 
 const unblockUser = catchAsync(async (req, res) => {
