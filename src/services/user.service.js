@@ -2309,7 +2309,7 @@ const getPackageReportService = async (filters = {}) => {
     orderBy: { purchaseDate: "desc" },
     take: 10,
     include: {
-      user: { select: { id: true, firstName: true, lastName: true, email: true, gender: true } },
+      user: { select: { id: true, firstName: true, lastName: true, email: true, gender: true, image: true } },
       package: { select: { id: true, name: true, price: true } }
     }
   });
