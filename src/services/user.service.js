@@ -2318,7 +2318,7 @@ const getPackageReportService = async (filters = {}) => {
 };
 const newTen = async (filters = {}) => {
   // Last 10 purchases
-  const ten = await prisma.userPackage.findMany({
+  const ten = await prisma.user.findMany({
     where: {
       role: "CLIENT"
     }   ,
