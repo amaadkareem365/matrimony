@@ -289,6 +289,13 @@ const updateSection = catchAsync(async (req, res) => {
     res.status(httpStatus.OK).send(section);
 });
 
+
+const getSectionById = catchAsync(async (req, res) => {
+    const section = await settingsService.getSectionById(parseInt(req.params.id));
+    res.status(httpStatus.OK).send(section);
+});
+
+
 const deleteSection = catchAsync(async (req, res) => {
     await settingsService.deleteSection(parseInt(req.params.id));
     res.status(httpStatus.NO_CONTENT).send();
@@ -420,6 +427,7 @@ const incrementPageView = async (req, res) => {
 };
 
 module.exports = {
+    getSectionById,
     incrementPageView,
     updateMultipleTranslationsByLanguageCode,
     getAllTranslationsByLanguageCode,

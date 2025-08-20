@@ -260,6 +260,7 @@ router.patch("/footer", validate(settingsValidation.updateFooter), settingsContr
 // Footer Sections
 router.patch("/footer/sections", validate(settingsValidation.createSection), settingsController.createSection);
 router.patch("/footer/sections/:id", validate(settingsValidation.updateSection), settingsController.updateSection);
+router.get("/footer/sections/:id",  settingsController.getSectionById);
 router.delete("/footer/sections/:id", settingsController.deleteSection);
 router.get('/user-dashboard', settingsController.getAllUserDashboards);
 

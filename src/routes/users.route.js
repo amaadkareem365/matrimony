@@ -18,6 +18,10 @@ router.get('/analytics-report',  userController.analyticsReportController);
 router.get("/packages", userController.getPackageReport);
 router.get("/new-10", userController.newTen);
 router.get('/blocked', auth(), userController.getBlockedUsers);
+router.get('/support-tickets/all',  userController.getAllTickets);
+router
+  .route('/support-tickets')
+  .get(auth(), userController.getTickets)
 
 router.post("/", validate(userValidation.createUser), userController.createUser);
 router.post('/image-request',auth(), userController.requestPhotoAccess);
@@ -101,10 +105,8 @@ router.post('/unblock', auth(), userController.unblockUser);
 
 router
   .route('/support-tickets')
-  .get(auth(), userController.getTickets)
   .post(auth(), validate(userValidation.supportTicketSchema), userController.createTicket);
 
-  router.get('/support-tickets/all', auth(), userController.getAllTickets);
 router
   .route('/support-tickets/status')
   .patch(auth(), validate(userValidation.updateTicketStatusSchema), userController.updateTicketStatus);
