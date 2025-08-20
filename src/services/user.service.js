@@ -93,7 +93,9 @@ const getUserById = async (userId) => {
           createdAt: 'desc', // or createdAt: 'desc'
         },
         take: 1, // only latest one
-
+        include: {
+          package: true, // ✅ fetch package details too
+        },
       },
     }
   });
