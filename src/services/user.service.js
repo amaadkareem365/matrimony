@@ -87,15 +87,22 @@ const getUserById = async (userId) => {
       hobbiesInterests: true,
       language: true,
       living: true,
-      physicalAppearance: true
+      physicalAppearance: true,
+      UserPackage: {
+        orderBy: {
+          createdAt: 'desc', // or createdAt: 'desc'
+        },
+        take: 1, // only latest one
+
+      },
     }
   });
 
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-
-  return exclude(user, ['password']);
+  const { UserPackage, ...rest } = user;
+  return exclude({ ...rest, package: UserPackage[0] || null }, ['password']);
 };
 const getAllUsers = async (query) => {
   const {
@@ -681,13 +688,13 @@ const blockUser = async (blockerId, blockedUserId) => {
   if (existingBlock) {
     return { message: "You have already blocked this user." };
   }
-   await prisma.block.create({
+  await prisma.block.create({
     data: {
       blockerId,
       blockedId: blockedUserId,
     },
   });
-   return { message: "You blocked this user." };
+  return { message: "You blocked this user." };
 
 };
 
@@ -1437,7 +1444,7 @@ const getSentLikes = async (userId) => {
     },
     include: {
       receiver: true,
-      sender:true
+      sender: true
     },
     orderBy: {
       updatedAt: 'desc'
@@ -2323,8 +2330,8 @@ const newTen = async (filters = {}) => {
   const ten = await prisma.user.findMany({
     where: {
       role: "CLIENT"
-    }   ,
-     orderBy: { createdAt: "desc" },
+    },
+    orderBy: { createdAt: "desc" },
     take: 10,
   });
 
