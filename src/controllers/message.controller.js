@@ -14,12 +14,89 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 
+// exports.getMessage = async (req, res, next) => {
+//   try {
+//     const chatId = parseInt(req.params.chatId);
+//     const { cursor, take = 20 } = req.query;
+// const messagesRaw = await prisma.message.findMany({
+//   where: { chatId },
+//   take: +take,
+//   ...(cursor && {
+//     skip: 1, // skip the cursor itself
+//     cursor: { id: parseInt(cursor) },
+//   }),
+//   orderBy: { createdAt: "desc" },
+//   include: {
+//     sender: {
+//       select: {
+//         id: true,
+//         firstName: true,
+//         lastName: true,
+//         image: true,
+//       },
+//     },
+//     chat: {
+//       include: {
+//         ChatUser: {
+//           select: {
+//             user: {
+//               select: {
+//                 id: true,
+//                 firstName: true,
+//                 lastName: true,
+//                 image: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   },
+// });
+
+// // Transform response
+// const messages = messagesRaw.map((msg) => {
+//   const allUsers = msg.chat.ChatUser.map((cu) => cu.user);
+
+//   return {
+//     id: msg.id,
+//     content: msg.content,
+//     createdAt: msg.createdAt,
+//     sender: msg.sender,
+//     receivers: allUsers.filter((u) => u.id !== msg.sender.id), // exclude sender
+//   };
+// });
+
+//     res.status(200).json({
+//       status: "success",
+//       messages: messages.length,
+//       data: {
+//         messages,
+//         nextCursor:
+//           messages.length > 0 ? messages[messages.length - 1].id : null,
+//       },
+//     });
+//   } catch (err) {
+//     console.error("Error fetching messages:", err);
+//     res.status(404).json({
+//       status: "fail",
+//       data: { message: err.message },
+//     });
+//   }
+// };
 exports.getMessage = async (req, res, next) => {
   try {
     const chatId = parseInt(req.params.chatId);
     const { cursor, take = 20 } = req.query;
 
-    const messages = await prisma.message.findMany({
+    if (isNaN(chatId)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid chatId provided",
+      });
+    }
+
+    const messagesRaw = await prisma.message.findMany({
       where: { chatId },
       take: +take,
       ...(cursor && {
@@ -36,12 +113,41 @@ exports.getMessage = async (req, res, next) => {
             image: true,
           },
         },
+        chat: {
+          include: {
+            ChatUser: {
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    image: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
+    });
+
+    // Transform response
+    const messages = messagesRaw.map((msg) => {
+      const allUsers = msg.chat.ChatUser.map((cu) => cu.user);
+
+      return {
+        id: msg.id,
+        content: msg.content,
+        createdAt: msg.createdAt,
+        sender: msg.sender,
+        receivers: allUsers.filter((u) => u.id !== msg.sender.id), // exclude sender
+      };
     });
 
     res.status(200).json({
       status: "success",
-      messages: messages.length,
+      count: messages.length,
       data: {
         messages,
         nextCursor:
@@ -50,13 +156,13 @@ exports.getMessage = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Error fetching messages:", err);
-    res.status(404).json({
-      status: "fail",
-      data: { message: err.message },
+    res.status(500).json({
+      status: "error",
+      message: "Something went wrong while fetching messages",
+      error: err.message,
     });
   }
 };
-
 
 exports.sendMessage = async (req, res, next) => {
   const { chatId, content } = req.body;
