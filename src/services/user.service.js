@@ -2328,19 +2328,40 @@ const getPackageReportService = async (filters = {}) => {
   };
 };
 const newTen = async (filters = {}) => {
-  // Last 10 purchases
+  // Last 10 purchases (only users with image + package)
   const ten = await prisma.user.findMany({
     where: {
-      role: "CLIENT"
+      role: "CLIENT",
+      image: {
+        not: null,   // must not be null
+        notIn: [""]  // must not be an empty string
+      },
     },
-    orderBy: { createdAt: "desc" },
-    take: 10,
+    include: {
+      living: true,
+      UserPackage: {
+        orderBy: {
+          createdAt: "desc", // latest first
+        },
+        take: 1, // only the latest package
+        include: {
+          package: true, // fetch package details
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" }, // newest users first
+    take: 4, // limit to 10
   });
 
-  return {
-    ten
-  };
+  // Flatten UserPackage to `package`
+  const formatted = ten.map(({ UserPackage, ...rest }) => ({
+    ...rest,
+    package: UserPackage[0] || null,
+  }));
+
+  return { ten: formatted };
 };
+
 
 
 const checkDailyLikeLimit = async (userId) => {
