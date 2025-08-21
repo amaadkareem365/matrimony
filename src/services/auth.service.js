@@ -585,6 +585,103 @@ const seedProfileAttributeOptions = async () => {
 
 // seedProfileAttributeOptions();
 // seedEmailTemplates();
+
+async function main() {
+  // Make sure EN exists in Language table
+  const en = await prisma.language.findUnique({
+    where: { code: 'EN' },
+  });
+
+  if (!en) {
+    throw new Error("Language EN not found. Please insert it first.");
+  }
+
+  // Example list with duplicates
+  const rawTranslations = [
+    "$50 for 6 months acc… access!",
+    "1. Log in to Google Firebase and create a new app if you don’t have any.",
+    "2. Go to Project Settings and select General tab.",
+    "3. Select Config and you will find Firebase Config Credentials.",
+    "4. Copy your App’s Credentials and paste the credentials into appropriate field.",
+    "5. Now, select Cloud Messaging tab and enable Cloud Messaging API.",
+    "6. After enabling Cloud Messaging API, you will find Server Key. Copy the key.",
+    "7. Configure the “firebase-messaging-sw.js” file and keep the file in the root dir.",
+    "About Me",
+    "About Us",
+    "Abuse Word Filtering",
+    "Accept",
+    "Accepted",
+    "Account Opening Email To Admin",
+    "Account Opening Email",
+    "Action",
+    "Activation",
+    "Active",
+    "Add a new photo",
+    "Add Banner",
+    "Add Blog",
+    "Add Category",
+    "Add Content",
+    "Add Currency",
+    "Add FAQ",
+    "Add Field",
+    "Add Member",
+    "Add Member",   // duplicate
+    "Add New",
+    "Add New Blog Category",
+    "Add New Package",
+    "Add New Page",
+    "Add New Staff",
+    "Add New Staff Role",
+    "Add Newsletter",
+    "Add Order",
+    "Add Package",
+    "Add Page",
+    "Add Translate",
+    "Address Name",
+    "Address Value",
+    "Admin",
+    "Admin Details",
+    "Admin login page background",
+    "Admin Name",
+    "Admin Page Paragraph",
+    "Admin Page Title",
+    "Age",
+    // ... continue all 1410
+  ];
+
+  // Deduplicate
+  const translations = [...new Set(rawTranslations)].map((text) => ({
+    key: text,
+    text,
+  }));
+
+  for (const t of translations) {
+    const result = await prisma.translation.upsert({
+      where: {
+        key_languageId: {
+          key: t.key,
+          languageId: en.id,
+        },
+      },
+      update: { text: t.text },
+      create: { ...t, languageId: en.id },
+    });
+
+    console.log(`✅ Added/Updated: "${result.key}"`);
+  }
+
+  console.log(`\n🎉 Done! Total unique EN translations seeded: ${translations.length}`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
 module.exports = {
   loginUserWithCredentials,
   getUser,

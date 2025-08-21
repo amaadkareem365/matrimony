@@ -610,6 +610,11 @@ const updateSection = {
   })
 };
 
+
+
+
+
+
 module.exports = {
   updateFooter,
   createSection,

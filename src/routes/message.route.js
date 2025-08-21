@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.route('/').post(auth(),messageController.sendMessage);
 router.route('/:chatId').get(messageController.getMessage);
-router.route('/pusher/autenticate').get(auth(),messageController.authenticatePusher);
+router.route('/pusher/autenticate').post(auth(),messageController.authenticatePusher);
 router.post('/pusher/webhooks', messageController.handlePresenceWebhook);
 
 

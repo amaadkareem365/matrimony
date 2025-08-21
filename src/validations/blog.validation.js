@@ -53,6 +53,8 @@ const updateBlog = {
     metaImage: Joi.string().uri().optional(),
     metaDescription: Joi.string().optional(),
     metaKeywords: Joi.string().optional(),
+    isActive: Joi.boolean().optional(),
+
   }).min(1),
 };
 
