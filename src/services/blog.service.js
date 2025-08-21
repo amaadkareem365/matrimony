@@ -30,12 +30,66 @@ const createBlog = async (data) => {
   return prisma.blog.create({ data });
 };
 
-const getAllBlogs = async () => {
-  return prisma.blog.findMany({
-    include: { category: true },
-    orderBy: { createdAt: "desc" },
+const getAllBlogs = async ({ isActive, page, limit }) => {
+  // Global counts
+  const [totalBlogs, activeBlogs, inactiveBlogs] = await Promise.all([
+    prisma.blog.count(),
+    prisma.blog.count({ where: { isActive: true } }),
+    prisma.blog.count({ where: { isActive: false } }),
+  ]);
+
+  // Get all categories (only active ones)
+  const categories = await prisma.blogCategory.findMany({
+    where: { isActive: true },
+    orderBy: { name: "asc" },
   });
+
+  // For each category, fetch paginated blogs
+  const result = await Promise.all(
+    categories.map(async (category) => {
+      const whereClause = {
+        categoryId: category.id,
+        ...(isActive !== undefined && {
+          isActive: isActive === "true",
+        }),
+      };
+
+      const [blogs, total] = await Promise.all([
+        prisma.blog.findMany({
+          where: whereClause,
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        prisma.blog.count({ where: whereClause }),
+      ]);
+
+      return {
+        id: category.id,
+        name: category.name,
+        blogs,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    })
+  );
+
+  return {
+    stats: {
+      totalBlogs,
+      activeBlogs,
+      inactiveBlogs,
+    },
+    categoryNames: categories.map((c) => c.name), // 👈 new array
+    categories: result,
+  };
 };
+
+
 
 const getBlogById = async (id) => {
   return prisma.blog.findUnique({

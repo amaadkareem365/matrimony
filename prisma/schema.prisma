@@ -393,7 +393,7 @@ model Blog {
   bannerImage      String?
   shortDescription String?      @db.Text
   description      String?      @db.Text
-
+  isActive         Boolean      @default(true)
   // Meta fields
   metaTitle       String?
   metaImage       String?

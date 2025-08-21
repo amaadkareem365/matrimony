@@ -29,9 +29,21 @@ const createBlog = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(blog);
 });
 
+// const getAllBlogs = catchAsync(async (req, res) => {
+//   const blogs = await blogService.getAllBlogs();
+//   res.send(blogs);
+// });
+
 const getAllBlogs = catchAsync(async (req, res) => {
-  const blogs = await blogService.getAllBlogs();
-  res.send(blogs);
+  const { isActive, page = 1, limit = 5 } = req.query;
+
+  const categories = await blogService.getAllBlogs({
+    isActive,
+    page: parseInt(page),
+    limit: parseInt(limit),
+  });
+
+  res.send({ categories });
 });
 
 const getBlogById = catchAsync(async (req, res) => {
