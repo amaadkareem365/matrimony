@@ -713,7 +713,11 @@ const getBlockedUsers = async (userId) => {
   const blocks = await prisma.block.findMany({
     where: { blockerId: userId },
     include: {
-      blocked: true
+     blocked: {
+        include: {
+          PhotoSetting: true, // fetch PhotoSetting for each blocked user
+        },
+      },
     },
   });
 
