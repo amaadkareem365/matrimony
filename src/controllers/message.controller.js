@@ -433,7 +433,7 @@ exports.handlePresenceWebhook = async (req, res) => {
   
   req.body.events.forEach(event => {
     const userId = parseInt(event.user_id);
-    
+      console.log("i got here")
     if (event.name === 'member_added') {
       updateUserStatus(userId, true);
     }
