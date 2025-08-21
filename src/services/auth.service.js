@@ -673,14 +673,14 @@ async function main() {
   console.log(`\n🎉 Done! Total unique EN translations seeded: ${translations.length}`);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// main()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
 
 module.exports = {
   loginUserWithCredentials,
