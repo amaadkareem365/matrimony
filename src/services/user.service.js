@@ -1464,11 +1464,7 @@ const getLikesReceived = async (userId, status) => {
     include: {
       sender: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          image: true,
-          role: true
+         educationCareer:true
         }
       }
     },
