@@ -88,7 +88,7 @@ const getUserById = async (userId) => {
       language: true,
       living: true,
       physicalAppearance: true,
-      PhotoSetting:true,
+      PhotoSetting: true,
       UserPackage: {
         orderBy: {
           createdAt: 'desc', // or createdAt: 'desc'
@@ -1471,9 +1471,9 @@ const getLikesReceived = async (userId, status) => {
         select: {
           educationCareer: true
         },
-        receiver: true
-      }
 
+      },
+      receiver: true
     },
     orderBy: {
       createdAt: 'desc'
