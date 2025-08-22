@@ -93,6 +93,22 @@ model User {
   UserPackage UserPackage[]
 
   ChatUser ChatUser[]
+
+  ProfileVisitsMade ProfileVisit[] @relation("ProfileVisitsMade")
+  ProfileVisitsReceived ProfileVisit[] @relation("ProfileVisitsReceived")
+}
+
+
+model ProfileVisit {
+  id         Int      @id @default(autoincrement())
+  visitorId  Int
+  visitedId  Int
+  visitedAt  DateTime @default(now())
+
+  visitor User @relation("ProfileVisitsMade", fields: [visitorId], references: [id])
+  visited User @relation("ProfileVisitsReceived", fields: [visitedId], references: [id])
+
+  @@unique([visitorId, visitedId]) // prevents duplicate visits in one day unless you want multiple entries
 }
 
 model ChatUser {

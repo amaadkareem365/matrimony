@@ -10,24 +10,28 @@ const router = express.Router();
 
 
 router.get("/search", auth(), userController.searchUsers);
-router.get("/today-matches",auth(), userController.getTodaysTopMatches)
-router.get("/may-like",auth(), userController.getYouMayAlsoLike)
-router.get('/detail-report',  userController.getUserReportController);
-router.get('/member-report',  userController.memberReportController);
-router.get('/analytics-report',  userController.analyticsReportController);
-router.get('/reports-summary',  userController.getAggregatedReport);
+router.get("/today-matches", auth(), userController.getTodaysTopMatches)
+router.get("/may-like", auth(), userController.getYouMayAlsoLike)
+router.get('/detail-report', userController.getUserReportController);
+router.get('/member-report', userController.memberReportController);
+router.get('/analytics-report', userController.analyticsReportController);
+router.get('/reports-summary', userController.getAggregatedReport);
 router.get("/packages", userController.getPackageReport);
 router.get("/new-10", userController.newTen);
 router.get('/blocked', auth(), userController.getBlockedUsers);
-router.get('/support-tickets/all',  userController.getAllTickets);
+router.get('/support-tickets/all', userController.getAllTickets);
 router
   .route('/support-tickets')
   .get(auth(), userController.getTickets)
+  router.get('/profile-visitors', auth(), userController.getProfileVisitors);
+router.post('/profile-visit', auth(), userController.recordProfileVisit);
+
+
 
 router.post("/", validate(userValidation.createUser), userController.createUser);
-router.post('/image-request',auth(), userController.requestPhotoAccess);
-router.post('/image-request/:requestId/respond',auth(), userController.respondToPhotoRequest);
-router.get('/image-request',auth(), userController.getPhotoRequests);
+router.post('/image-request', auth(), userController.requestPhotoAccess);
+router.post('/image-request/:requestId/respond', auth(), userController.respondToPhotoRequest);
+router.get('/image-request', auth(), userController.getPhotoRequests);
 router
   .route('/photo-setting')
   .get(auth(), userController.getPhotoSetting)
@@ -63,7 +67,7 @@ router.delete("/:userId/personality-behavior", validate(userValidation.userIdPar
 // PartnerExpectation Routes
 router.post("/:userId/partner-expectation", userController.createPartnerExpectation);
 router.get("/:userId/partner-expectation", validate(userValidation.userIdParam), userController.getPartnerExpectation);
-router.patch("/:userId/partner-expectation",  userController.updatePartnerExpectation);
+router.patch("/:userId/partner-expectation", userController.updatePartnerExpectation);
 router.delete("/:userId/partner-expectation", validate(userValidation.userIdParam), userController.deletePartnerExpectation);
 
 // Lifestyle Routes
@@ -122,12 +126,12 @@ router
 
 
 
-router.post('/like',auth() ,userController.sendLike);
-router.post('/like/:likeId/respond',auth(), userController.respondToLike);
-router.get('/like/received',auth(), userController.getReceivedLikes);
-router.get('/:userId/can-message',auth(), userController.checkCanMessage);
-router.get('/like/accepted',auth(), userController.getAcceptedLikes);
-router.get('/like/sent',auth(), userController.getSentLikes);
+router.post('/like', auth(), userController.sendLike);
+router.post('/like/:likeId/respond', auth(), userController.respondToLike);
+router.get('/like/received', auth(), userController.getReceivedLikes);
+router.get('/:userId/can-message', auth(), userController.checkCanMessage);
+router.get('/like/accepted', auth(), userController.getAcceptedLikes);
+router.get('/like/sent', auth(), userController.getSentLikes);
 
 
 module.exports = router;

@@ -46,6 +46,38 @@ const getDashboardStats = catchAsync(async (req, res) => {
 });
 
 
+
+const recordProfileVisit = catchAsync(async (req, res) => {
+  const { targetId } = req.body;
+  const visitorId = req.user.id;
+
+  if (visitorId === targetId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot visit your own profile');
+  }
+  // Record or update visit
+  const visit = await userService.recordProfileVisit(visitorId, targetId);
+
+  // Optionally send notification to the visited user
+
+  res.status(httpStatus.CREATED).send({
+    status: 'success',
+    data: visit
+  });
+});
+
+const getProfileVisitors = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
+  const visitors = await userService.getProfileVisitors(userId);
+
+  res.status(httpStatus.OK).send({
+    status: 'success',
+    data: visitors,
+  });
+});
+
+
+
 const getEducationCareer = catchAsync(async (req, res) => {
   const educationCareer = await userService.getEducationCareerByUserId(req.params.userId);
   res.send(educationCareer);
@@ -795,6 +827,10 @@ const newTen = async (req, res) => {
   }
 };
 module.exports = {
+  
+  
+  getProfileVisitors,
+  recordProfileVisit,
   getSentLikes,
   newTen,
   getPackageReport,

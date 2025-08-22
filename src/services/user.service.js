@@ -2488,6 +2488,19 @@ const newTen = async (filters = {}) => {
 
 
 
+const getProfileVisitors = async (userId) => {
+  return prisma.profileVisit.findMany({
+    where: { visitedId: userId },
+    orderBy: { visitedAt: 'desc' },
+    include: {
+      visitor: true
+      
+    },
+  });
+};
+
+
+
 const checkDailyLikeLimit = async (userId) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -2526,7 +2539,28 @@ const checkDailyLikeLimit = async (userId) => {
     );
   }
 };
+
+const recordProfileVisit = async (visitorId, visitedId) => {
+  return prisma.profileVisit.upsert({
+    where: {
+      visitorId_visitedId: {
+        visitorId,
+        visitedId,
+      },
+    },
+    update: {
+      visitedAt: new Date(), // refresh last visit timestamp
+    },
+    create: {
+      visitorId,
+      visitedId,
+    },
+  });
+};
+
 module.exports = {
+  getProfileVisitors,
+  recordProfileVisit,
   getCombinedReportService,
   checkDailyLikeLimit,
   getSentLikes,
