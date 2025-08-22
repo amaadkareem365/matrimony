@@ -1471,6 +1471,7 @@ const getLikesReceived = async (userId, status) => {
          educationCareer:true
         }
       }
+      
     },
     orderBy: {
       createdAt: 'desc'
@@ -2327,6 +2328,140 @@ const getPackageReportService = async (filters = {}) => {
     lastTenUserPackages
   };
 };
+
+
+const getCombinedReportService = async () => {
+  const now = new Date();
+  const firstDayThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+  const startOfThisYear = new Date(now.getFullYear(), 0, 1);
+
+  // =========================
+  // USER REPORT SECTION
+  // =========================
+  const dailyLogins = await prisma.user.count({
+    where: { lastLogin: { not: null } }
+  });
+
+  const completedProfiles = await prisma.user.count({
+    where: { route: "/auth/profile/partner-preferences" }
+  });
+
+  const deletedAccounts = await prisma.user.count({
+    where: { isDeleted: true }
+  });
+
+  const neverLoggedIn = await prisma.user.count({
+    where: { lastLogin: null }
+  });
+
+  // =========================
+  // PACKAGE REPORT SECTION
+  // =========================
+  const totalPayments = await prisma.userPackage.aggregate({
+    _sum: { priceAtPurchase: true }
+  });
+
+  const activePackages = await prisma.userPackage.count({
+    where: { status: "ACTIVE" }
+  });
+
+  const thisMonthPayments = await prisma.userPackage.aggregate({
+    _sum: { priceAtPurchase: true },
+    where: { purchaseDate: { gte: firstDayThisMonth } }
+  });
+
+  const thisYearPayments = await prisma.userPackage.aggregate({
+    _sum: { priceAtPurchase: true },
+    where: { purchaseDate: { gte: startOfThisYear } }
+  });
+
+  const revenueByGenderRaw = await prisma.userPackage.groupBy({
+    by: ["userId"],
+    _sum: { priceAtPurchase: true }
+  });
+
+  const revenueByGender = {};
+  for (let record of revenueByGenderRaw) {
+    const user = await prisma.user.findUnique({
+      where: { id: record.userId },
+      select: { gender: true }
+    });
+    const gender = user?.gender || "Unknown";
+    revenueByGender[gender] =
+      (revenueByGender[gender] || 0) + (record._sum.priceAtPurchase || 0);
+  }
+
+  // =========================
+  // MEMBER REPORT SECTION
+  // =========================
+  const totalMembers = await prisma.user.count({
+    where: { isDeleted: false }
+  });
+
+  const membersLastMonth = await prisma.user.count({
+    where: {
+      isDeleted: false,
+      createdAt: { gte: firstDayLastMonth, lte: lastDayLastMonth }
+    }
+  });
+
+  const membersThisMonth = await prisma.user.count({
+    where: { isDeleted: false, createdAt: { gte: firstDayThisMonth } }
+  });
+
+  const activeMembers = await prisma.user.count({
+    where: { isDeleted: false, isActive: true }
+  });
+
+  // =========================
+  // ANALYTICS REPORT SECTION
+  // =========================
+  const totalUsers = await prisma.user.count({
+    where: { isDeleted: false }
+  });
+
+  const newSignups = await prisma.user.count({
+    where: { isDeleted: false, createdAt: { gte: firstDayThisMonth } }
+  });
+
+  const totalMatches = await prisma.connection.count();
+
+  const totalMessages = await prisma.message.count();
+
+  // =========================
+  // FINAL COMBINED REPORT
+  // =========================
+  return {
+    userReport: {
+      dailyLogins,
+      completedProfiles,
+      deletedAccounts,
+      neverLoggedIn
+    },
+    packageReport: {
+      totalRevenue: totalPayments._sum.priceAtPurchase || 0,
+      activePackages,
+      thisMonthRevenue: thisMonthPayments._sum.priceAtPurchase || 0,
+      thisYearRevenue: thisYearPayments._sum.priceAtPurchase || 0,
+      revenueByGender
+    },
+    memberReport: {
+      totalMembers,
+      activeMembers,
+      membersLastMonth,
+      membersThisMonth
+    },
+    analyticsReport: {
+      totalUsers,
+      newSignups,
+      totalMatches,
+      totalMessages
+    }
+  };
+};
+
 const newTen = async (filters = {}) => {
   // Last 10 purchases (only users with image + package)
   const ten = await prisma.user.findMany({
@@ -2403,6 +2538,7 @@ const checkDailyLikeLimit = async (userId) => {
   }
 };
 module.exports = {
+  getCombinedReportService,
   checkDailyLikeLimit,
   getSentLikes,
   newTen,

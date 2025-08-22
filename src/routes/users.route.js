@@ -15,6 +15,7 @@ router.get("/may-like",auth(), userController.getYouMayAlsoLike)
 router.get('/detail-report',  userController.getUserReportController);
 router.get('/member-report',  userController.memberReportController);
 router.get('/analytics-report',  userController.analyticsReportController);
+router.get('/reports-summary',  userController.getAggregatedReport);
 router.get("/packages", userController.getPackageReport);
 router.get("/new-10", userController.newTen);
 router.get('/blocked', auth(), userController.getBlockedUsers);

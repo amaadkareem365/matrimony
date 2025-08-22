@@ -726,6 +726,15 @@ const { startDate, endDate, relationshipStatus, country } = req.query;
 });
 
 
+const getAggregatedReport = catchAsync(async (req, res) => {
+
+    const report = await userService.getCombinedReportService ();
+    return res.status(200).json({
+      success: true,
+      data: report
+    });
+});
+
 const memberReportController = catchAsync(async (req, res) => {
       const { startDate, endDate, relationshipStatus, country } = req.query;
     const report = await userService.getMemberReport({
@@ -859,5 +868,6 @@ module.exports = {
   getTicketWithReplies,
   getAllTickets,
   searchUsers,
-  getAllUsers
+  getAllUsers,
+  getAggregatedReport
 };
