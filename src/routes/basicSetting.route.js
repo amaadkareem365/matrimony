@@ -258,9 +258,10 @@ router.get("/footer", settingsController.getFooter);
 router.patch("/footer", validate(settingsValidation.updateFooter), settingsController.updateFooter);
 
 // Footer Sections
-router.patch("/footer/sections", validate(settingsValidation.createSection), settingsController.createSection);
-router.patch("/footer/sections/:id", validate(settingsValidation.updateSection), settingsController.updateSection);
+router.patch("/footer/sections",  settingsController.createSection);
+router.patch("/footer/sections/:id", settingsController.updateSection);
 router.get("/footer/sections/:id",  settingsController.getSectionById);
+router.get("/footer/sections",  settingsController.getSection);
 router.delete("/footer/sections/:id", settingsController.deleteSection);
 router.get('/user-dashboard', settingsController.getAllUserDashboards);
 

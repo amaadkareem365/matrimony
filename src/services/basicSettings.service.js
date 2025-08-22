@@ -780,6 +780,14 @@ const getSectionById = async (id, data) => {
   return section;
  
 };
+
+
+const getSection = async (id, data) => {
+  const section = await prisma.footerSection.findMany();
+  if (!section) throw new ApiError(httpStatus.NOT_FOUND, "Section not found");
+  return section;
+ 
+};
 const deleteSection = async (id) => {
   const section = await prisma.footerSection.findUnique({ where: { id } });
   if (!section) throw new ApiError(httpStatus.NOT_FOUND, "Section not found");
@@ -995,6 +1003,7 @@ const incrementOrCreate = async (pageLink) => {
 
 
 module.exports = {
+  getSection,
   getSectionById,
   incrementOrCreate,
   updateMultipleTranslationsByLanguageCode,

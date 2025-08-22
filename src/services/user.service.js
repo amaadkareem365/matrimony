@@ -1428,11 +1428,7 @@ const getAcceptedLikes = async (userId) => {
     },
     include: {
       receiver: true,
-      sender: {
-        select: {
-          educationCareer: true
-        },
-      }
+      sender: true
     },
     orderBy: {
       updatedAt: 'desc'
@@ -1447,11 +1443,7 @@ const getSentLikes = async (userId) => {
     },
     include: {
       receiver: true,
-      sender: {
-        select: {
-          educationCareer: true
-        },
-      }
+      sender: true
     },
     orderBy: {
       updatedAt: 'desc'
@@ -1467,12 +1459,7 @@ const getLikesReceived = async (userId, status) => {
   return prisma.like.findMany({
     where,
     include: {
-      sender: {
-        select: {
-          educationCareer: true
-        },
-
-      },
+      sender: true,
       receiver: true
     },
     orderBy: {
