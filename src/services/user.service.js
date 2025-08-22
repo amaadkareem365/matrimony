@@ -713,7 +713,7 @@ const getBlockedUsers = async (userId) => {
   const blocks = await prisma.block.findMany({
     where: { blockerId: userId },
     include: {
-     blocked: {
+      blocked: {
         include: {
           PhotoSetting: true, // fetch PhotoSetting for each blocked user
         },
@@ -1426,15 +1426,11 @@ const getAcceptedLikes = async (userId) => {
       status: 'ACCEPTED'
     },
     include: {
-      receiver: {
+      receiver: true,
+      sender: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          image: true,
-          role: true,
-          shortDescription: true
-        }
+          educationCareer: true
+        },
       }
     },
     orderBy: {
@@ -1450,7 +1446,11 @@ const getSentLikes = async (userId) => {
     },
     include: {
       receiver: true,
-      sender: true
+      sender: {
+        select: {
+          educationCareer: true
+        },
+      }
     },
     orderBy: {
       updatedAt: 'desc'
@@ -1468,10 +1468,11 @@ const getLikesReceived = async (userId, status) => {
     include: {
       sender: {
         select: {
-         educationCareer:true
-        }
+          educationCareer: true
+        },
+        receiver: true
       }
-      
+
     },
     orderBy: {
       createdAt: 'desc'
