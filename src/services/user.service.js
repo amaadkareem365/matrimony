@@ -88,6 +88,7 @@ const getUserById = async (userId) => {
       language: true,
       living: true,
       physicalAppearance: true,
+      PhotoSetting:true,
       UserPackage: {
         orderBy: {
           createdAt: 'desc', // or createdAt: 'desc'
