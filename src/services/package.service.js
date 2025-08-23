@@ -6,10 +6,32 @@ const createPackage = async (data) => {
 };
 
 const getAllPackages = async () => {
-  return prisma.package.findMany({
-    orderBy: { createdAt: "desc" },
+  const packages = await prisma.package.findMany({
+    select: {
+      id: true,
+      price: true,
+      isActive: true,
+      soldCount: true,
+    },
   });
+
+  let activePackages = 0;
+  let totalSold = 0;
+  let totalEarnings = 0;
+
+  for (const pkg of packages) {
+    if (pkg.isActive) activePackages++;
+    totalSold += pkg.soldCount;
+    totalEarnings += pkg.soldCount * pkg.price;
+  }
+
+  return {
+    activePackages,
+    totalSold,
+    totalEarnings,
+  };
 };
+
 
 const getPackageById = async (id) => {
   return prisma.package.findUnique({ where: { id } });
