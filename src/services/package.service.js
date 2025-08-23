@@ -26,6 +26,7 @@ const getAllPackages = async () => {
   }
 
   return {
+    packages,
     activePackages,
     totalSold,
     totalEarnings,
