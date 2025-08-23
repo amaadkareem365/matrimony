@@ -258,7 +258,7 @@ router.get("/footer", settingsController.getFooter);
 router.patch("/footer", validate(settingsValidation.updateFooter), settingsController.updateFooter);
 
 // Footer Sections
-router.patch("/footer/sections",  settingsController.createSection);
+router.post("/footer/sections",  settingsController.createSection);
 router.patch("/footer/sections/:id", settingsController.updateSection);
 router.get("/footer/sections/:id",  settingsController.getSectionById);
 router.get("/footer/sections",  settingsController.getSection);

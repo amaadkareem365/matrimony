@@ -98,6 +98,9 @@ model User {
   ProfileVisitsReceived ProfileVisit[] @relation("ProfileVisitsReceived")
 
   UserActivity UserActivity[]
+
+  activeLanguageId Int?
+  activeLanguage   Language? @relation(fields: [activeLanguageId], references: [id])
 }
 
 model UserActivity {
@@ -600,6 +603,8 @@ model Language {
   updatedAt DateTime @updatedAt
 
   Translation Translation[]
+
+  User User[]
 }
 
 model Translation {
