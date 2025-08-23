@@ -84,7 +84,8 @@ const updateUser = {
     religion: Joi.string().optional(),
     shortDescription: Joi.string().optional(),
     roleId: Joi.number().optional(),
-    packageId:Joi.number().integer().optional()
+    packageId:Joi.number().integer().optional(),
+    activeLanguageId:Joi.number().integer().optional()
   }).min(1)
 };
 

@@ -36,6 +36,7 @@ const getUser = async (userId) => {
     where: { id: +userId },
     include: {
       living:true,
+      activeLanguage:true,
       allow: {
         include: {
           permissions: true, // Includes all related permissions

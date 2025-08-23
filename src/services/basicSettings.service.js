@@ -900,7 +900,62 @@ const getAllTranslationsByLanguage = async (languageCode) => {
 // };
 
 
-const getAllTranslationsByLanguageCode = async (languageCode, search, page = 1, limit = 10) => {
+// const getAllTranslationsByLanguageCode = async (languageCode, search,all=false, page = 1, limit = 10) => {
+//   const language = await prisma.language.findUnique({
+//     where: { code: languageCode },
+//   });
+
+//   if (!language) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, "Language not found");
+//   }
+
+//   const skip = (page - 1) * limit;
+
+//   const whereClause = {
+//     languageId: language.id,
+//     ...(search && {
+//       OR: [
+//         { key: { contains: search } },
+//         { text: { contains: search } }
+//       ]
+//     })
+//   };
+
+//   const [translations, total] = await Promise.all([
+//     prisma.translation.findMany({
+//       where: whereClause,
+//       select: { key: true, text: true },
+//       skip,
+//       take: limit,
+//       orderBy: { createdAt: "desc" }
+//     }),
+//     prisma.translation.count({ where: whereClause })
+//   ]);
+
+//   return {
+//     languageCode: languageCode,
+//     language:language.name,
+//     translations: translations.reduce((acc, t) => {
+//       acc[t.key] = t.text;
+//       return acc;
+//     }, {}),
+//     pagination: {
+//       total,
+//       page,
+//       limit,
+//       totalPages: Math.ceil(total / limit)
+//     }
+//   };
+// };
+
+
+const getAllTranslationsByLanguageCode = async (
+  languageCode,
+  search,
+  all = false,
+  page = 1,
+  limit = 10
+) => {
   const language = await prisma.language.findUnique({
     where: { code: languageCode },
   });
@@ -909,42 +964,42 @@ const getAllTranslationsByLanguageCode = async (languageCode, search, page = 1, 
     throw new ApiError(httpStatus.BAD_REQUEST, "Language not found");
   }
 
-  const skip = (page - 1) * limit;
-
   const whereClause = {
     languageId: language.id,
     ...(search && {
       OR: [
-        { key: { contains: search } },
-        { text: { contains: search } }
-      ]
-    })
+        { key: { contains: search, mode: "insensitive" } },
+        { text: { contains: search, mode: "insensitive" } },
+      ],
+    }),
   };
 
+  // if "all" is true, fetch everything without pagination
   const [translations, total] = await Promise.all([
     prisma.translation.findMany({
       where: whereClause,
       select: { key: true, text: true },
-      skip,
-      take: limit,
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
+      ...(all ? {} : { skip: (page - 1) * limit, take: limit }),
     }),
-    prisma.translation.count({ where: whereClause })
+    prisma.translation.count({ where: whereClause }),
   ]);
 
   return {
-    languageCode: languageCode,
-    language:language.name,
+    languageCode,
+    language: language.name,
     translations: translations.reduce((acc, t) => {
       acc[t.key] = t.text;
       return acc;
     }, {}),
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    }
+    pagination: all
+      ? null
+      : {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
   };
 };
 

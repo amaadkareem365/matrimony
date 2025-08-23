@@ -382,9 +382,10 @@ const getAllTranslationsByLanguage = async (req, res) => {
 const getAllTranslationsByLanguageCode = async (req, res, next) => {
     try {
         const { languageCode } = req.params;
-        const { search, page, limit } = req.query;
+        const { search, page, limit ,all } = req.query;
         const translations = await settingsService.getAllTranslationsByLanguageCode(languageCode,
             search,
+           all === "true", // pass as boolean
             Number(page) || 1,
             Number(limit) || 10);
 
