@@ -362,7 +362,7 @@ if (membersLastMonth === 0) {
   return {
     membersLastMonth,
     membersThisMonth,
-    growthRate,
+    growthRateMessage,
     totalMembers,
     premiumMembers,
     freeMembers,
