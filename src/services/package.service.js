@@ -7,12 +7,6 @@ const createPackage = async (data) => {
 
 const getAllPackages = async () => {
   const packages = await prisma.package.findMany({
-    select: {
-      id: true,
-      price: true,
-      isActive: true,
-      soldCount: true,
-    },
   });
 
   let activePackages = 0;
