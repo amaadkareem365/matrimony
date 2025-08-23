@@ -324,7 +324,6 @@ const getDashboardStats = async () => {
 
   const membersLastMonth = await prisma.user.count({
     where: {
-      ...whereFilter,
       isDeleted: false,
       createdAt: {
         gte: firstDayLastMonth,
@@ -338,7 +337,6 @@ const getDashboardStats = async () => {
 
   const membersThisMonth = await prisma.user.count({
     where: {
-      ...whereFilter,
       isDeleted: false,
       createdAt: {
         gte: firstDayThisMonth
