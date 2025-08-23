@@ -1691,31 +1691,27 @@ const getPhotoRequests = async (userId, type, status) => {
     where.status = status;
   }
 
-  return prisma.photoRequest.findMany({
+  const requests = await prisma.photoRequest.findMany({
     where,
     include: {
-      requester: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          image: true
-        }
-      },
-      target: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          image: true
-        }
-      }
+      requester: true,
+      target: true
     },
     orderBy: {
       createdAt: 'desc'
     }
   });
+
+  // Map requester → sender, target → receiver
+  return requests.map(req => ({
+    ...req,
+    sender: req.requester,
+    receiver: req.target,
+    requester: undefined,
+    target: undefined
+  }));
 };
+
 
 
 
