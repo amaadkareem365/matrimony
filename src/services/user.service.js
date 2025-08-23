@@ -1678,6 +1678,30 @@ const denyPhotoRequest = async (requestId) => {
   });
 };
 
+// const getPhotoRequests = async (userId, type, status) => {
+//   const where = {};
+
+//   if (type === 'received') {
+//     where.targetId = userId;
+//   } else if (type === 'sent') {
+//     where.requesterId = userId;
+//   }
+
+//   if (status) {
+//     where.status = status;
+//   }
+
+//   return prisma.photoRequest.findMany({
+//     where,
+//     include: {
+//       requester: true,
+//       target: true
+//     },
+//     orderBy: {
+//       createdAt: 'desc'
+//     }
+//   });
+// };
 const getPhotoRequests = async (userId, type, status) => {
   const where = {};
 
@@ -1691,7 +1715,7 @@ const getPhotoRequests = async (userId, type, status) => {
     where.status = status;
   }
 
-  return prisma.photoRequest.findMany({
+  const requests = await prisma.photoRequest.findMany({
     where,
     include: {
       requester: true,
@@ -1701,6 +1725,15 @@ const getPhotoRequests = async (userId, type, status) => {
       createdAt: 'desc'
     }
   });
+
+  // Map requester → sender, target → receiver
+  return requests.map(req => ({
+    ...req,
+    sender: req.requester,
+    receiver: req.target,
+    requester: undefined,
+    target: undefined
+  }));
 };
 
 
