@@ -319,8 +319,43 @@ const getDashboardStats = async () => {
     const monthIndex = new Date(createdAt).getMonth();
     monthlyStats[monthIndex] += _count;
   });
+  const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+  const membersLastMonth = await prisma.user.count({
+    where: {
+      ...whereFilter,
+      isDeleted: false,
+      createdAt: {
+        gte: firstDayLastMonth,
+        lte: lastDayLastMonth
+      }
+    }
+  });
+
+  // Members added this month
+  const firstDayThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const membersThisMonth = await prisma.user.count({
+    where: {
+      ...whereFilter,
+      isDeleted: false,
+      createdAt: {
+        gte: firstDayThisMonth
+      }
+    }
+  });
+
+  // Growth rate relative to last month
+  let growthRate = 0;
+  if (membersLastMonth > 0) {
+    growthRate = ((membersThisMonth - membersLastMonth) / membersLastMonth) * 100;
+  }
 
   return {
+    membersLastMonth,
+    membersThisMonth,
+    growthRate,
     totalMembers,
     premiumMembers,
     freeMembers,
@@ -2494,7 +2529,7 @@ const getProfileVisitors = async (userId) => {
     orderBy: { visitedAt: 'desc' },
     include: {
       visitor: true
-      
+
     },
   });
 };
