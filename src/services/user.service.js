@@ -1691,7 +1691,7 @@ const getPhotoRequests = async (userId, type, status) => {
     where.status = status;
   }
 
-  const requests = await prisma.photoRequest.findMany({
+  return prisma.photoRequest.findMany({
     where,
     include: {
       requester: true,
@@ -1701,17 +1701,7 @@ const getPhotoRequests = async (userId, type, status) => {
       createdAt: 'desc'
     }
   });
-
-  // Map requester → sender, target → receiver
-  return requests.map(req => ({
-    ...req,
-    sender: req.requester,
-    receiver: req.target,
-    requester: undefined,
-    target: undefined
-  }));
 };
-
 
 
 
