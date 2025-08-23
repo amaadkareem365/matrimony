@@ -633,7 +633,7 @@ const requestPhotoAccess = catchAsync(async (req, res) => {
   // Check if target has photos set to "onRequestOnly"
   const targetSettings = await userService.getUserPhotoSettings(targetId);
   if (!targetSettings?.onRequestOnly) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'User does not require photo requests');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User is not accepting photo request');
   }
 
   // Check for existing request
