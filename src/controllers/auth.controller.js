@@ -10,7 +10,10 @@ const {
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-
+  if (req.body.adminId) {
+    await authService.createUserActivity(req.body.adminId, MEMEBER_REGISTERED
+      , `New memeber got registered with the email ${req.body.email}`);
+  }
   res.status(httpStatus.CREATED).json({
     status: "success",
     message: "User registered successfully.",
@@ -24,8 +27,6 @@ const register = catchAsync(async (req, res) => {
   });
 });
 
-
-
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
 
@@ -36,6 +37,8 @@ const login = catchAsync(async (req, res) => {
 
   const otp = await authService.generateAndStoreOTP(user.id);
   await sgEmailService.sendOtpEmail(user.email, otp);
+
+
   res.status(httpStatus.OK).json({
     user,
   });
@@ -71,6 +74,7 @@ const changePassword = catchAsync(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   await authService.changeUserPassword(userId, currentPassword, newPassword);
+  await authService.createUserActivity(userId, PASSWORD_CHANGED, `PASSWORD GOT UPDATED`);
 
   res.status(httpStatus.OK).json({ message: "Password changed successfully" });
 });
@@ -78,7 +82,9 @@ const changePassword = catchAsync(async (req, res) => {
 const updateAdmin = catchAsync(async (req, res) => {
   const { id } = req.params;
   const updatedUser = await userService.updateAdmin(+id, req.body);
-
+  if (updatedUser.role = "ADMIN") {
+    await authService.createUserActivity(updatedUser.id, PROFILE_UPDATED, `Admin updated his profile`);
+  }
   res.status(httpStatus.OK).send({
     status: "success",
     message: "Admin updated successfully.",
@@ -92,12 +98,16 @@ const verifyEmail = catchAsync(async (req, res) => {
   const userId = user.id;
   const isVerified = await authService.verifyOTP(userId, otp);
   if (!isVerified) {
+    await authService.createUserActivity(user.id, LOGIN_LOGIN_FAILED, `OTP verification failed`);
     return res.status(httpStatus.BAD_REQUEST).send({
       isVerified,
       message: "Invalid or expired OTP.",
     });
   }
   const tokens = await tokenService.generateAuthTokens(user, true);
+  if (user.role = "ADMIN") {
+    await authService.createUserActivity(user.id, LOGIN_SUCCESS, `OTP verified  correctly`);
+  }
   // Mark user as verified
   res.status(httpStatus.OK).send({
     status: "success",
@@ -107,12 +117,25 @@ const verifyEmail = catchAsync(async (req, res) => {
 });
 
 
+const getMyActivities = catchAsync(async (req, res) => {
+  const userId = req.user.id; // assuming req.user is set by auth middleware
+  const { skip, take } = req.query;
+  const activities = await authService.getUserActivities(userId, {
+    skip,
+    take,
+  });
 
+  res.status(200).json({
+    success: true,
+    activities,
+  });
+});
 
 
 
 
 module.exports = {
+  getMyActivities,
   register,
   login,
   getMe,

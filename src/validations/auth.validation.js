@@ -22,6 +22,7 @@ const register = {
     children: Joi.string().optional(),
     religion: Joi.string().optional(),
     shortDescription: Joi.string().optional(),
+    adminId:Joi.integer().optional()
   }),
 };
 

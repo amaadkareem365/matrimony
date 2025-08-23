@@ -41,5 +41,15 @@ router.patch(
   validate(authValidation.updateAdmin),
   authController.updateAdmin
 );
+router.patch(
+  "/get-activities",
+  auth(),
+  authController.getMyActivities
+);
+
+
+
+
+
 
 module.exports = router;

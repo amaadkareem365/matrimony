@@ -96,7 +96,32 @@ model User {
 
   ProfileVisitsMade ProfileVisit[] @relation("ProfileVisitsMade")
   ProfileVisitsReceived ProfileVisit[] @relation("ProfileVisitsReceived")
+
+  UserActivity UserActivity[]
 }
+
+model UserActivity {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      ActivityType
+  message   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum ActivityType {
+  PASSWORD_CHANGED
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  PROFILE_UPDATED
+  MEMEBER_REGISTERED
+  MEMEBER_UPDATED
+  FAQ_ADDED
+  PACKAGE_ADDED
+}
+
+
+
 
 
 model ProfileVisit {

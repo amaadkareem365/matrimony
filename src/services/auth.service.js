@@ -106,6 +106,17 @@ const generateAndStoreOTP = async (userId) => {
   return otp;
 };
 
+
+
+const createUserActivity = async (userId, type, message = null) => {
+  return await prisma.userActivity.create({
+    data: {
+      userId,
+      type,
+      message,
+    },
+  });
+};
 const verifyOTP = async (userId, otp) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -681,8 +692,19 @@ async function main() {
 //   .finally(async () => {
 //     await prisma.$disconnect();
 //   });
+const getUserActivities = async (userId, filters = {}) => {
+  const { skip = 0, take = 20 } = filters;
 
+  return prisma.userActivity.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    skip: Number(skip),
+    take: Number(take),
+  });
+};
 module.exports = {
+  getUserActivities,
+  createUserActivity,
   loginUserWithCredentials,
   getUser,
   changeUserPassword,
