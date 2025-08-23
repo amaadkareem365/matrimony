@@ -209,17 +209,19 @@ router.post(
   settingsController.createPageSettings
 );
 
-router.get(
-  '/basic-pages/:id',
-  validate(settingsValidation.getPageSettings),
-  settingsController.getPageSettings
-);
 
 router.get(
   '/basic-pages/by-url',
   validate(settingsValidation.getPageByUrlSettings),
   settingsController.getPageByUrlSettings
 );
+router.get(
+  '/basic-pages/:id',
+  validate(settingsValidation.getPageSettings),
+  settingsController.getPageSettings
+);
+
+
 
 router.patch(
   '/basic-pages/:id',
