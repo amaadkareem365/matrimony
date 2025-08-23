@@ -11,7 +11,7 @@ const {
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   if (req.body.adminId) {
-    await authService.createUserActivity(req.body.adminId, MEMEBER_REGISTERED
+    await authService.createUserActivity(req.body.adminId, "MEMEBER_REGISTERED"
       , `New memeber got registered with the email ${req.body.email}`);
   }
   res.status(httpStatus.CREATED).json({
@@ -74,7 +74,7 @@ const changePassword = catchAsync(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   await authService.changeUserPassword(userId, currentPassword, newPassword);
-  await authService.createUserActivity(userId, PASSWORD_CHANGED, `PASSWORD GOT UPDATED`);
+  await authService.createUserActivity(userId, "PASSWORD_CHANGED", `PASSWORD GOT UPDATED`);
 
   res.status(httpStatus.OK).json({ message: "Password changed successfully" });
 });
@@ -83,7 +83,7 @@ const updateAdmin = catchAsync(async (req, res) => {
   const { id } = req.params;
   const updatedUser = await userService.updateAdmin(+id, req.body);
   if (updatedUser.role = "ADMIN") {
-    await authService.createUserActivity(updatedUser.id, PROFILE_UPDATED, `Admin updated his profile`);
+    await authService.createUserActivity(updatedUser.id, "PROFILE_UPDATED", `Admin updated his profile`);
   }
   res.status(httpStatus.OK).send({
     status: "success",
@@ -98,7 +98,7 @@ const verifyEmail = catchAsync(async (req, res) => {
   const userId = user.id;
   const isVerified = await authService.verifyOTP(userId, otp);
   if (!isVerified) {
-    await authService.createUserActivity(user.id, LOGIN_LOGIN_FAILED, `OTP verification failed`);
+    await authService.createUserActivity(user.id, "LOGIN_FAILED", `OTP verification failed`);
     return res.status(httpStatus.BAD_REQUEST).send({
       isVerified,
       message: "Invalid or expired OTP.",
@@ -106,7 +106,7 @@ const verifyEmail = catchAsync(async (req, res) => {
   }
   const tokens = await tokenService.generateAuthTokens(user, true);
   if (user.role = "ADMIN") {
-    await authService.createUserActivity(user.id, LOGIN_SUCCESS, `OTP verified  correctly`);
+    await authService.createUserActivity(user.id, "LOGIN_SUCCESS", `OTP verified  correctly`);
   }
   // Mark user as verified
   res.status(httpStatus.OK).send({
