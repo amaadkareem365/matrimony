@@ -345,10 +345,19 @@ const getDashboardStats = async () => {
   });
 
   // Growth rate relative to last month
-  let growthRate = 0;
-  if (membersLastMonth > 0) {
-    growthRate = ((membersThisMonth - membersLastMonth) / membersLastMonth) * 100;
+let growthRateMessage;
+
+if (membersLastMonth === 0) {
+  if (membersThisMonth > 0) {
+    growthRateMessage = `${membersThisMonth} new members this month`;
+  } else {
+    growthRateMessage = "No members yet";
   }
+} else {
+  const growthRate = ((membersThisMonth - membersLastMonth) / membersLastMonth) * 100;
+  growthRateMessage = `${growthRate.toFixed(2)}% growth`;
+}
+  
 
   return {
     membersLastMonth,
