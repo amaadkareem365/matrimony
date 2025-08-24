@@ -102,7 +102,6 @@ const generateAndStoreOTP = async (userId) => {
     where: { id: userId },
     data: { otp, otpExpiresAt },
   });
-  await sendOTPEmail(user.email, otp, user.firstName, process.env.APP_NAME);
 
   // Send OTP via email
   return otp;
