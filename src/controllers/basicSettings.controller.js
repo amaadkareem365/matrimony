@@ -67,7 +67,7 @@ const updateEmailTemplate = catchAsync(async (req, res) => {
 const getAllEmailTemplates = catchAsync(async (req, res) => {
     const templates = await settingsService.getAllEmailTemplates();
     const stats = await settingsService.getEmailSentCount();
-    res.send(templates,stats);
+    res.send({templates,stats});
 });
 
 
