@@ -94,7 +94,7 @@ model User {
 
   ChatUser ChatUser[]
 
-  ProfileVisitsMade ProfileVisit[] @relation("ProfileVisitsMade")
+  ProfileVisitsMade     ProfileVisit[] @relation("ProfileVisitsMade")
   ProfileVisitsReceived ProfileVisit[] @relation("ProfileVisitsReceived")
 
   UserActivity UserActivity[]
@@ -104,12 +104,12 @@ model User {
 }
 
 model UserActivity {
-  id        Int      @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   userId    Int
   type      ActivityType
   message   String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id])
 }
 
 enum ActivityType {
@@ -123,15 +123,11 @@ enum ActivityType {
   PACKAGE_ADDED
 }
 
-
-
-
-
 model ProfileVisit {
-  id         Int      @id @default(autoincrement())
-  visitorId  Int
-  visitedId  Int
-  visitedAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  visitorId Int
+  visitedId Int
+  visitedAt DateTime @default(now())
 
   visitor User @relation("ProfileVisitsMade", fields: [visitorId], references: [id])
   visited User @relation("ProfileVisitsReceived", fields: [visitedId], references: [id])
@@ -439,10 +435,10 @@ model Blog {
   description      String?      @db.Text
   isActive         Boolean      @default(true)
   // Meta fields
-  metaTitle       String?
-  metaImage       String?
-  metaDescription String?
-  metaKeywords    String?
+  metaTitle        String?
+  metaImage        String?
+  metaDescription  String?
+  metaKeywords     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -583,11 +579,12 @@ model EmailTemplate {
 }
 
 model EmailTemplateTranslation {
-  id              Int    @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   emailTemplateId Int
   language        String // e.g., 'en', 'nl', 'fr'
-  subject         String
-  content         String
+  subject         String  @db.Text
+  description     String? @db.Text
+  content         String  @db.Text
 
   emailTemplate EmailTemplate @relation(fields: [emailTemplateId], references: [id])
 
@@ -1162,12 +1159,12 @@ model FooterSettings {
 }
 
 model FooterSection {
-  id          Int    @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   sectionName String // e.g., "Company", "Support"
   pageNames   String // Comma-separated page names like: "About,Contact,Terms"
   pagesLinks  String?
-  footerId Int
-  footer   FooterSettings @relation(fields: [footerId], references: [id])
+  footerId    Int
+  footer      FooterSettings @relation(fields: [footerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1176,7 +1173,7 @@ model FooterSection {
 model UserDashoard {
   id          Int      @id @default(autoincrement())
   sectionPage String
-  pages      String?
+  pages       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
