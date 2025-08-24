@@ -78,7 +78,7 @@ const resendOTP = catchAsync(async (req, res) => {
 
   // Generate and store new OTP
   const otp = await authService.resendOTP(user.id);
-  await sgEmailService.sendOtpEmail(email, otp);
+  await emailService.sendOtpEmail(user.id, otp );
   res.status(httpStatus.OK).json({
     message: "A new OTP has been sent to your email.",
   });
