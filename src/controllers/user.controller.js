@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { userService } = require('../services');
+const { userService ,authService} = require('../services');
 const  emailService  = require('../services/email.service');
 const { PrismaClient, Role } = require("@prisma/client");
 const ApiError = require("../utils/ApiError");
@@ -8,6 +8,9 @@ const prisma = new PrismaClient();
 // User CRUD Controllers
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
+   await emailService.sendAccountCreatedByAdminEmail(user.id, req.body.password);
+      await authService.createUserActivity(req.body.adminId, "MEMEBER_REGISTERED"
+        , `New memeber got registered with the email ${req.body.email}`);
   res.status(httpStatus.CREATED).send(user);
 });
 

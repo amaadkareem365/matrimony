@@ -36,7 +36,9 @@ const createUser = {
     children: Joi.string().optional(),
     religion: Joi.string().optional(),
     shortDescription: Joi.string().optional(),
-    roleId: Joi.number().optional()
+    roleId: Joi.number().optional(),
+    adminId: Joi.number().integer().optional()
+
   })
 };
 
@@ -84,8 +86,8 @@ const updateUser = {
     religion: Joi.string().optional(),
     shortDescription: Joi.string().optional(),
     roleId: Joi.number().optional(),
-    packageId:Joi.number().integer().optional(),
-    activeLanguageId:Joi.number().integer().optional()
+    packageId: Joi.number().integer().optional(),
+    activeLanguageId: Joi.number().integer().optional()
   }).min(1)
 };
 
