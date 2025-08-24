@@ -663,7 +663,7 @@ const respondToPhotoRequest = catchAsync(async (req, res) => {
   const { requestId } = req.params;
   const { action } = req.body; // 'approve' or 'deny'
   const responderId = req.user.id;
-
+ 
   const request = await userService.getPhotoRequestById(requestId);
 
   if (!request) {

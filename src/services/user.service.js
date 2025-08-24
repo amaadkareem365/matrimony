@@ -1668,7 +1668,7 @@ const getPhotoRequest = async (requesterId, targetId) => {
 
 const getPhotoRequestById = async (requestId) => {
   return prisma.photoRequest.findUnique({
-    where: { id: +requestId },
+    where: { id: parseInt(requestId) },
     include: {
       requester: true,
       target: true
