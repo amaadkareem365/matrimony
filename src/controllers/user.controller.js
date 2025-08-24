@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
    await emailService.sendAccountCreatedByAdminEmail(user.id, req.body.password);
-      await authService.createUserActivity(req.body.adminId, "MEMEBER_REGISTERED"
+      await authService.createUserActivity(req.user.id, "MEMEBER_REGISTERED"
         , `New memeber got registered with the email ${req.body.email}`);
   res.status(httpStatus.CREATED).send(user);
 });
