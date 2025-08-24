@@ -26,7 +26,7 @@ router
   router.get('/profile-visitors', auth(), userController.getProfileVisitors);
 router.post('/profile-visit', auth(), userController.recordProfileVisit);
 
-router.post("/", validate(userValidation.createUser), userController.createUser);
+router.post("/",auth(), validate(userValidation.createUser), userController.createUser);
 router.post('/image-request', auth(), userController.requestPhotoAccess);
 router.post('/image-request/:requestId/respond', auth(), userController.respondToPhotoRequest);
 router.get('/image-request', auth(), userController.getPhotoRequests);
