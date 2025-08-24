@@ -26,7 +26,7 @@ const sendEmail = async (to, subject,html) => {
     console.log(`Notification sent to ${to}`, res);
   });
 };
-const sendProfileVisitEmail = async ({ recipientId, visitorId }) => {
+const sendProfileVisitEmail = async ( recipientId, visitorId ) => {
     // Fetch recipient and visitor
     const recipient = await prisma.user.findUnique({
         where: { id: recipientId },
@@ -76,7 +76,7 @@ const sendProfileVisitEmail = async ({ recipientId, visitorId }) => {
     );
 };
 
-const sendLikeAcceptedEmail = async ({ senderId, receiverId }) => {
+const sendLikeAcceptedEmail = async ( senderId, receiverId ) => {
   // Fetch sender & receiver
   const sender = await prisma.user.findUnique({
     where: { id: senderId },
@@ -135,7 +135,7 @@ const sendLikeAcceptedEmail = async ({ senderId, receiverId }) => {
   await sendEmail(sender.email, subject, content);
 };
 
-const sendPhotoRequestEmail = async ({ requesterId, targetId }) => {
+const sendPhotoRequestEmail = async ( requesterId, targetId ) => {
   const target = await prisma.user.findUnique({
     where: { id: targetId },
     include: { activeLanguage: true },
@@ -182,7 +182,7 @@ const sendPhotoRequestEmail = async ({ requesterId, targetId }) => {
 };
 
 
-const sendPackagePurchaseEmail = async ({ userId, packageId, startDate, endDate, price }) => {
+const sendPackagePurchaseEmail = async ( userId, packageId, startDate, endDate, price ) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: { activeLanguage: true },
@@ -239,7 +239,7 @@ const sendPackagePurchaseEmail = async ({ userId, packageId, startDate, endDate,
     }
   await sendEmail(user.email, subject, content);
 };
-const sendPackageExpiryWarningEmail = async ({ userId }) => {
+const sendPackageExpiryWarningEmail = async ( userId ) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: { activeLanguage: true },
@@ -317,7 +317,7 @@ const sendOtpEmail = async (userId, otp ) => {
 };
 
 
-const sendAccountDeletionEmail = async ({ userId }) => {
+const sendAccountDeletionEmail = async ( userId ) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: { activeLanguage: true },
@@ -353,7 +353,7 @@ const sendAccountDeletionEmail = async ({ userId }) => {
   await sendEmail(user.email, subject, content);
 };
 
-const sendWelcomeEmail = async ({ userId }) => {
+const sendWelcomeEmail = async ( userId ) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         include: { activeLanguage: true },
@@ -405,7 +405,7 @@ const sendWelcomeEmail = async ({ userId }) => {
  
 };
 
-const sendAccountCreatedByAdminEmail = async ({ userId, password }) => {
+const sendAccountCreatedByAdminEmail = async ( userId, password ) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: { activeLanguage: true },
@@ -491,7 +491,7 @@ const notifyAdminsNewTicket = async (ticket) => {
     }
 };
 
-const sendForgotPasswordEmail = async ({ userId, resetPasswordToken }) => {
+const sendForgotPasswordEmail = async ( userId, resetPasswordToken ) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         include: { activeLanguage: true },
