@@ -289,6 +289,7 @@ const updatePhotoSetting = catchAsync(async (req, res) => {
 const createTicket = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const ticket = await userService.createTicket(userId, req.body);
+  await emailService.notifyAdminsNewTicket(ticket);
   res.status(201).json(ticket);
 });
 
