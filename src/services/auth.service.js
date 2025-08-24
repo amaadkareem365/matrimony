@@ -102,6 +102,7 @@ const generateAndStoreOTP = async (userId) => {
     where: { id: userId },
     data: { otp, otpExpiresAt },
   });
+  await sendOTPEmail(user.email, otp, user.firstName, process.env.APP_NAME);
 
   // Send OTP via email
   return otp;
@@ -703,7 +704,57 @@ const getUserActivities = async (userId, filters = {}) => {
     take: Number(take),
   });
 };
+
+
+const getUserByIdForPasswordRest = async (id) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+     
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Error retrieving user:", error);
+    throw error;
+  }
+};
+
+
+const resetPassword = async (resetPasswordToken, newPassword) => {
+  try {
+    const resetPasswordTokenDoc = await tokenService.verifyToken(
+      resetPasswordToken,
+      tokenTypes.RESET_PASSWORD
+    );
+    const user = await getUserByIdForPasswordRest(
+      resetPasswordTokenDoc.user.id
+    );
+    if (!user) {
+      throw new Error();
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 8);
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+    await prisma.token.deleteMany({
+      where: {
+        userId: user.id,
+        type: tokenTypes.RESET_PASSWORD,
+      },
+    });
+    return true;
+  } catch (error) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Password reset failed");
+  }
+};
 module.exports = {
+  resetPassword,
   getUserActivities,
   createUserActivity,
   loginUserWithCredentials,

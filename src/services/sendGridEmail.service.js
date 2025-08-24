@@ -58,6 +58,11 @@ const sendOtpEmail = async (to, otp) => {
   await sendEmail(to, subject, text, html);
 };
 
+
+
+
+
 module.exports = {
   sendOtpEmail,
+  sendEmail
 };

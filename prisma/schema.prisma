@@ -112,6 +112,16 @@ model UserActivity {
   user      User         @relation(fields: [userId], references: [id])
 }
 
+model EmailSentCount {
+  id                Int      @id @default(autoincrement())
+  welcomeEmail      Int      @default(0)
+  passwordReset     Int      @default(0)
+  orderConfirmation Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+}
+
 enum ActivityType {
   PASSWORD_CHANGED
   LOGIN_SUCCESS

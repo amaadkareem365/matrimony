@@ -100,13 +100,8 @@ router.get("/:userId/physical-appearance", validate(userValidation.userIdParam),
 router.patch("/:userId/physical-appearance", validate(userValidation.physicalAppearanceUpdate), userController.updatePhysicalAppearance);
 router.delete("/:userId/physical-appearance", validate(userValidation.userIdParam), userController.deletePhysicalAppearance);
 
-
-
-
 router.post('/block', auth(), userController.blockUser);
 router.post('/unblock', auth(), userController.unblockUser);
-
-
 
 router
   .route('/support-tickets')

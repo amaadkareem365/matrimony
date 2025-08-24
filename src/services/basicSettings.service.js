@@ -68,6 +68,10 @@ const getAllEmailTemplates = async () => {
 
 
 
+const getEmailSentCount = async () => {
+  return await prisma.emailSentCount.findFirst();
+};
+
 
 const createEmailTemplate = async (data) => {
   return await prisma.emailTemplate.create({
@@ -1058,6 +1062,7 @@ const incrementOrCreate = async (pageLink) => {
 
 
 module.exports = {
+  getEmailSentCount,
   getSection,
   getSectionById,
   incrementOrCreate,

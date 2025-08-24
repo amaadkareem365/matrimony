@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const bcrypt = require("bcryptjs");
 const crypto = require('crypto');
+const { sendPackagePurchaseEmail,sendAccountDeletionEmail } = require("../services/email.service");
 
 const prisma = require("../utils/db")
 
@@ -345,19 +346,19 @@ const getDashboardStats = async () => {
   });
 
   // Growth rate relative to last month
-let growthRateMessage;
+  let growthRateMessage;
 
-if (membersLastMonth === 0) {
-  if (membersThisMonth > 0) {
-    growthRateMessage = `${membersThisMonth} new members this month`;
+  if (membersLastMonth === 0) {
+    if (membersThisMonth > 0) {
+      growthRateMessage = `${membersThisMonth} new members this month`;
+    } else {
+      growthRateMessage = "No members yet";
+    }
   } else {
-    growthRateMessage = "No members yet";
+    const growthRate = ((membersThisMonth - membersLastMonth) / membersLastMonth) * 100;
+    growthRateMessage = `${growthRate.toFixed(2)}% growth`;
   }
-} else {
-  const growthRate = ((membersThisMonth - membersLastMonth) / membersLastMonth) * 100;
-  growthRateMessage = `${growthRate.toFixed(2)}% growth`;
-}
-  
+
 
   return {
     membersLastMonth,
@@ -447,6 +448,15 @@ const updateUserById = async (userId, updateData) => {
         notes: updateData.notes || null
       }
     });
+
+
+    await  sendPackagePurchaseEmail({
+      userId: user.id,
+      packageId: packageData.id,
+      startDate: packageStart,
+      endDate: packageEnd,
+      price: packageData.price,
+    });
     delete updateData.packageId;
   }
 
@@ -463,11 +473,13 @@ const deleteUserById = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.OK, "User not found");
   }
-
+  await sendAccountDeletionEmail({ userId });
   return await prisma.user.update({
     where: { id: parseInt(userId) },
     data: { isDeleted: true },
   });
+
+
 };
 
 // EducationCareer Services

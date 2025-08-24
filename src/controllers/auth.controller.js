@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const catchAsync = require("../utils/catchAsync");
+const  emailService  = require('../services/email.service');
 
 const {
   authService,
@@ -11,8 +12,12 @@ const {
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   if (req.body.adminId) {
+  await emailService.sendAccountCreatedByAdminEmail(user.id, req.body.password);
     await authService.createUserActivity(req.body.adminId, "MEMEBER_REGISTERED"
       , `New memeber got registered with the email ${req.body.email}`);
+  }
+  if(!req.body.adminId){
+     await emailService.sendWelcomeEmail(user.email, user.firstName);
   }
   res.status(httpStatus.CREATED).json({
     status: "success",
@@ -36,7 +41,7 @@ const login = catchAsync(async (req, res) => {
   });
 
   const otp = await authService.generateAndStoreOTP(user.id);
-  await sgEmailService.sendOtpEmail(user.email, otp);
+  await emailService.sendOtpEmail(user.email, otp, user.firstName);
 
 
   res.status(httpStatus.OK).json({
@@ -47,6 +52,15 @@ const login = catchAsync(async (req, res) => {
 const getMe = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const user = await authService.getUser(userId);
+    if (user.packageEnd) {
+    const now = new Date();
+    const fiveDaysBefore = new Date(user.packageEnd);
+    fiveDaysBefore.setDate(fiveDaysBefore.getDate() - 5);
+
+    if (now >= fiveDaysBefore && now < user.packageEnd) {
+      await emailService.sendPackageExpiryWarningEmail({ userId: user.id });
+    }
+  }
   res.send({ user: user });
 });
 
@@ -134,7 +148,39 @@ const getMyActivities = catchAsync(async (req, res) => {
 
 
 
+const forgotPassword = catchAsync(async (req, res) => {
+  const { resetPasswordToken } =
+    await tokenService.generateResetPasswordToken(req.body);
+  console.log({
+    resetPasswordToken,
+  });
+
+  await emailService.sendForgotPasswordEmail(
+    req.body.email,
+    resetPasswordToken
+  );
+  res.status(httpStatus.OK).send({
+    status: "success",
+    message: "Reset password email sent successfully.",
+  });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  await authService.resetPassword(
+    req.query.token,
+    req.body.password
+  );
+  res.status(httpStatus.OK).send({
+    status: "success",
+    message: "Password reset successfully.",
+  });
+});
+
+
 module.exports = {
+  forgotPassword,
+  resetPassword,
+
   getMyActivities,
   register,
   login,

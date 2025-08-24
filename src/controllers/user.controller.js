@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
+const  emailService  = require('../services/email.service');
 const { PrismaClient, Role } = require("@prisma/client");
 const ApiError = require("../utils/ApiError");
 const prisma = new PrismaClient();
@@ -56,7 +57,10 @@ const recordProfileVisit = catchAsync(async (req, res) => {
   }
   // Record or update visit
   const visit = await userService.recordProfileVisit(visitorId, targetId);
-
+  await emailService.sendProfileVisitEmail({
+    recipientId: targetId,
+    visitorId,
+  });
   // Optionally send notification to the visited user
 
   res.status(httpStatus.CREATED).send({
@@ -603,11 +607,12 @@ const checkCanMessage = catchAsync(async (req, res) => {
 const getAcceptedLikes = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
-  const acceptedLikes = await userService.getAcceptedLikes(userId);
+  const like = await userService.getAcceptedLikes(userId);
+  await sendLikeAcceptedEmail({ senderId: like.senderId, receiverId: like.receiverId });
 
   res.status(httpStatus.OK).send({
     status: 'success',
-    data: acceptedLikes
+    data: like
   });
 });
 
@@ -635,17 +640,14 @@ const requestPhotoAccess = catchAsync(async (req, res) => {
   if (!targetSettings?.onRequestOnly) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User is not accepting photo request');
   }
-
   // Check for existing request
   const existingRequest = await userService.getPhotoRequest(requesterId, targetId);
   if (existingRequest) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Photo request already exists');
   }
-
   const request = await userService.createPhotoRequest(requesterId, targetId);
-
   // Send notification to target
-
+  await emailService.sendPhotoRequestEmail({ requesterId, targetId });
   res.status(httpStatus.CREATED).send({
     status: 'success',
     data: request
