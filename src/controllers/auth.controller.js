@@ -41,7 +41,7 @@ const login = catchAsync(async (req, res) => {
   });
 
   const otp = await authService.generateAndStoreOTP(user.id);
-  await emailService.sendOtpEmail(user.id, otp, );
+  await emailService.sendOtpEmail(user.id, otp );
 
 
   res.status(httpStatus.OK).json({

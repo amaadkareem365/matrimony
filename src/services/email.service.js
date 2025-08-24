@@ -279,9 +279,9 @@ const sendPackageExpiryWarningEmail = async ({ userId }) => {
 };
 
 
-const sendOtpEmail = async ({ userId, otp }) => {
+const sendOtpEmail = async (userId, otp ) => {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: +userId },
     include: { activeLanguage: true },
   });
 
