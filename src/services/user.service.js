@@ -1678,14 +1678,14 @@ const getPhotoRequestById = async (requestId) => {
 
 const approvePhotoRequest = async (requestId) => {
   return prisma.photoRequest.update({
-    where: { id: requestId },
+    where: { id: +requestId },
     data: { status: 'APPROVED' }
   });
 };
 
 const denyPhotoRequest = async (requestId) => {
   return prisma.photoRequest.update({
-    where: { id: requestId },
+    where: { id: +requestId },
     data: { status: 'DENIED' }
   });
 };
