@@ -4,6 +4,7 @@ const { userService ,authService} = require('../services');
 const  emailService  = require('../services/email.service');
 const { PrismaClient, Role } = require("@prisma/client");
 const ApiError = require("../utils/ApiError");
+const { user } = require('../utils/db');
 const prisma = new PrismaClient();
 // User CRUD Controllers
 const createUser = catchAsync(async (req, res) => {
@@ -341,10 +342,12 @@ const searchUsers = catchAsync(async (req, res) => {
     city: req.query.city,
     religion: req.query.religion,
     education: req.query.education,
+    username: req.query.quickSearch,
     hasChildren: req.query.hasChildren ?
       (req.query.hasChildren === 'true') : undefined,
     page: req.query.page || 1,
-    limit: req.query.limit || 10
+    limit: req.query.limit || 10,
+
   };
 
   // Execute search
