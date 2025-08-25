@@ -386,9 +386,9 @@ const livingUpdate = {
     userId: Joi.number().required()
   }),
   body: Joi.object({
-    country: Joi.string().optional(),
-    state: Joi.string().optional(),
-    city: Joi.string().optional()
+   country: Joi.string().allow(null, "").optional(),
+    state: Joi.string().allow(null, "").optional(),
+    city: Joi.string().allow(null, "").optional()
   }).min(1)
 };
 

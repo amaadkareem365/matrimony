@@ -11,7 +11,6 @@ const {
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-
   await emailService.sendWelcomeEmail(user.id);
   const otp = await authService.generateAndStoreOTP(user.id);
   await emailService.sendOtpEmail(user.id, otp);
@@ -171,7 +170,6 @@ const resetPassword = catchAsync(async (req, res) => {
     message: "Password reset successfully.",
   });
 });
-
 
 module.exports = {
   forgotPassword,
