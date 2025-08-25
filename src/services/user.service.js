@@ -1497,17 +1497,22 @@ const getSentLikes = async (userId) => {
     },
     include: {
       receiver: {
-        PhotoSetting:true
+        include: {
+          PhotoSetting: true,
+        },
       },
       sender: {
-        PhotoSetting:true
-      }
+        include: {
+          PhotoSetting: true,
+        },
+      },
     },
     orderBy: {
-      updatedAt: 'desc'
-    }
+      updatedAt: 'desc',
+    },
   });
 };
+
 const getLikesReceived = async (userId, status) => {
   const where = { receiverId: userId };
   if (status) {
