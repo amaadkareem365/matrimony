@@ -144,14 +144,14 @@ const getMyActivities = catchAsync(async (req, res) => {
 
 
 const forgotPassword = catchAsync(async (req, res) => {
-  const { resetPasswordToken } =
+  const { resetPasswordToken,user } =
     await tokenService.generateResetPasswordToken(req.body);
   console.log({
     resetPasswordToken,
   });
 
   await emailService.sendForgotPasswordEmail(
-    req.body.email,
+    user.id,
     resetPasswordToken
   );
   res.status(httpStatus.OK).send({
