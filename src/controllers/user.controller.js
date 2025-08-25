@@ -8,9 +8,9 @@ const { user } = require('../utils/db');
 const prisma = new PrismaClient();
 // User CRUD Controllers
 const createUser = catchAsync(async (req, res) => {
-  const password = req.body.password;
-  const user = await userService.createUser(req.body);
-   await emailService.sendAccountCreatedByAdminEmail(user.id, password);
+  const {  adminId, ...userData } = req.body;
+  const user = await userService.createUser(userData);
+   await emailService.sendAccountCreatedByAdminEmail(user.id, userData.password);
       await authService.createUserActivity(req.user.id, "MEMEBER_REGISTERED"
         , `New memeber got registered with the email ${req.body.email}`);
   res.status(httpStatus.CREATED).send(user);
