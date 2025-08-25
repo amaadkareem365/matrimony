@@ -25,7 +25,7 @@ const createUser = {
     lastName: Joi.string().optional(),
     role: Joi.string(),
     dob: Joi.date().optional(),
-    image: Joi.string().uri().optional(),
+    image: Joi.string().uri().allow(null, "").optional(),
     phone: Joi.string().optional(),
     department: Joi.string().optional(),
     location: Joi.string().optional(),
