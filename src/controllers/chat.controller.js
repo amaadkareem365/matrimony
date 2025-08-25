@@ -214,15 +214,7 @@ const getUserChats = async (req, res) => {
       include: {
         ChatUser: {
           include: {
-            user: {
-              select: {
-                id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
-                image: true,
-              },
-            },
+            user: true
           },
         },
         messages: {
