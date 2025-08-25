@@ -61,7 +61,7 @@ const recordProfileVisit = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot visit your own profile');
   }
   // Record or update visit
-  const visit = await userService.recordProfileVisit(visitorId, targetId);
+  const visit = await userService.recordProfileVisit(visitorId, +targetId);
   await emailService.sendProfileVisitEmail({
     recipientId: targetId,
     visitorId,
