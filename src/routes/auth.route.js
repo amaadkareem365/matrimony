@@ -47,7 +47,7 @@ router.get(
   authController.getMyActivities
 );
 router.post(
-  "/forgot-password",
+  "/forget-password",
   authController.forgotPassword
 );
 router.post(

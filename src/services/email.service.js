@@ -518,7 +518,7 @@ const sendForgotPasswordEmail = async ( userId, resetPasswordToken ) => {
         .replace("[[firstName]]", user.firstName || user.username || "User")
         .replace("[[appName]]", process.env.APP_NAME || "Our App");
 
-    const resetLink = `${process.env.FRONTEND_URL || ""}/reset-password?token=${resetPasswordToken}`;
+    const resetLink = `${process.env.FRONTEND_URL_PASS || ""}reset-password?token=${resetPasswordToken}`;
 
     const rawContent = translation.content
         .replace("[[firstName]]", user.firstName || user.username || "User")
