@@ -1201,7 +1201,7 @@ const getYouMayAlsoLike = async (userId) => {
       lifestyle: true,
       PhotoSetting: true
     },
-    take: 10
+
   });
 
   // Add calculated ages
