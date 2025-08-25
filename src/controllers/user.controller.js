@@ -342,7 +342,7 @@ const searchUsers = catchAsync(async (req, res) => {
     city: req.query.city,
     religion: req.query.religion,
     education: req.query.education,
-    username: req.query.quickSearch,
+    firstName: req.query.quickSearch,
     hasChildren: req.query.hasChildren ?
       (req.query.hasChildren === 'true') : undefined,
     page: req.query.page || 1,
