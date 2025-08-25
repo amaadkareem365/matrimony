@@ -2566,8 +2566,11 @@ const getProfileVisitors = async (userId) => {
     where: { visitedId: userId },
     orderBy: { visitedAt: 'desc' },
     include: {
-      visitor: true
-
+      visitor: {
+        include: {
+          PhotoSetting: true, // include visitor's PhotoSetting
+        },
+      },
     },
   });
 };
