@@ -1,6 +1,6 @@
 const httpStatus = require("http-status");
 const catchAsync = require("../utils/catchAsync");
-const  emailService  = require('../services/email.service');
+const emailService = require('../services/email.service');
 
 const {
   authService,
@@ -11,9 +11,10 @@ const {
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
- 
-     await emailService.sendWelcomeEmail(user.id);
 
+  await emailService.sendWelcomeEmail(user.id);
+  const otp = await authService.generateAndStoreOTP(user.id);
+  await emailService.sendOtpEmail(user.id, otp);
   res.status(httpStatus.CREATED).json({
     status: "success",
     message: "User registered successfully.",
@@ -36,7 +37,7 @@ const login = catchAsync(async (req, res) => {
   });
 
   const otp = await authService.generateAndStoreOTP(user.id);
-  await emailService.sendOtpEmail(user.id, otp );
+  await emailService.sendOtpEmail(user.id, otp);
 
 
   res.status(httpStatus.OK).json({
@@ -47,7 +48,7 @@ const login = catchAsync(async (req, res) => {
 const getMe = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const user = await authService.getUser(userId);
-    if (user.packageEnd) {
+  if (user.packageEnd) {
     const now = new Date();
     const fiveDaysBefore = new Date(user.packageEnd);
     fiveDaysBefore.setDate(fiveDaysBefore.getDate() - 5);
@@ -73,7 +74,7 @@ const resendOTP = catchAsync(async (req, res) => {
 
   // Generate and store new OTP
   const otp = await authService.resendOTP(user.id);
-  await emailService.sendOtpEmail(user.id, otp );
+  await emailService.sendOtpEmail(user.id, otp);
   res.status(httpStatus.OK).json({
     message: "A new OTP has been sent to your email.",
   });
