@@ -325,9 +325,9 @@ model LanguageInfo {
 model Living {
   id      Int    @id @default(autoincrement())
   userId  Int    @unique
-  country String
-  state   String
-  city    String
+  country String?
+  state   String?
+  city    String?
 
   user User @relation(fields: [userId], references: [id])
 }
