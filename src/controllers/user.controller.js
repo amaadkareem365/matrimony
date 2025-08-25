@@ -63,7 +63,7 @@ const recordProfileVisit = catchAsync(async (req, res) => {
   // Record or update visit
   const visit = await userService.recordProfileVisit(visitorId, +targetId);
   await emailService.sendProfileVisitEmail({
-    recipientId: targetId,
+    recipientId: +targetId,
     visitorId,
   });
   // Optionally send notification to the visited user
