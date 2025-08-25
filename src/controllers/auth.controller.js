@@ -11,14 +11,9 @@ const {
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-  if (req.body.adminId) {
-  await emailService.sendAccountCreatedByAdminEmail(user.id, req.body.password);
-    await authService.createUserActivity(req.body.adminId, "MEMEBER_REGISTERED"
-      , `New memeber got registered with the email ${req.body.email}`);
-  }
-  if(!req.body.adminId){
-     await emailService.sendWelcomeEmail(user.email, user.firstName);
-  }
+ 
+     await emailService.sendWelcomeEmail(user.id);
+
   res.status(httpStatus.CREATED).json({
     status: "success",
     message: "User registered successfully.",

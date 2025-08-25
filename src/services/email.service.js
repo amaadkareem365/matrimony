@@ -353,7 +353,7 @@ const sendAccountDeletionEmail = async ( userId ) => {
   await sendEmail(user.email, subject, content);
 };
 
-const sendWelcomeEmail = async ({ userId }) => {
+const sendWelcomeEmail = async ( userId ) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         include: { activeLanguage: true },
