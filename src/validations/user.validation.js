@@ -246,9 +246,9 @@ const living = {
     userId: Joi.number().required()
   }),
   body: Joi.object({
-    country: Joi.string().required(),
-    state: Joi.string().required(),
-    city: Joi.string().required()
+    country: Joi.string().optional(),
+    state: Joi.string().optional(),
+    city: Joi.string().optional()
   })
 };
 
