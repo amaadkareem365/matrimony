@@ -188,9 +188,9 @@ const partnerExpectation = {
     goingOut: Joi.string().optional(),
     ageFrom: Joi.number().integer().optional(),
     ageTo: Joi.number().integer().optional(),
-    country: Joi.string().optional(),
-    city: Joi.string().optional(),
-    state: Joi.string().optional(),
+     country: Joi.string().allow(null, "").optional(),
+    city: Joi.string().allow(null, "").optional(),
+    state: Joi.string().allow(null, "").optional(),
 
   })
 };

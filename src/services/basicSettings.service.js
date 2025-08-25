@@ -972,8 +972,8 @@ const getAllTranslationsByLanguageCode = async (
     languageId: language.id,
     ...(search && {
       OR: [
-        { key: { contains: search, mode: "insensitive" } },
-        { text: { contains: search, mode: "insensitive" } },
+        { key: { contains: search } },
+        { text: { contains: search } },
       ],
     }),
   };
